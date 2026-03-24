@@ -42,7 +42,7 @@ npm run backend:build
 - Connect this GitHub repo to Netlify.
 - Build command: `npm run build`
 - Publish directory: `dist`
-- Production frontend: `https://jeevanam360.netlify.app/`
+- Production frontend: `https://jeevanam360a.netlify.app/`
 - Netlify builds now use `https://yoga-2-i5oy.onrender.com/api` automatically from `netlify.toml`
 - If your backend URL changes later, update `VITE_API_BASE_URL`
 
@@ -55,7 +55,7 @@ Required backend environment variables:
 
 - `MONGODB_URI`
 - `CORS_ALLOWED_ORIGINS`
-  Example: `http://localhost:5173,https://*.netlify.app,https://jeevanam360.netlify.app`
+  Example: `http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app`
 - `MAIL_HOST`
 - `MAIL_PORT`
 - `MAIL_USERNAME`
@@ -70,5 +70,6 @@ Required backend environment variables:
 
 ## Live URLs
 
-- Frontend: `https://jeevanam360.netlify.app/`
+- Frontend: `https://jeevanam360a.netlify.app/`
 - Backend: `https://yoga-2-i5oy.onrender.com`
+

@@ -8,10 +8,11 @@ services:
     healthCheckPath: /api/health
     envVars:
       - key: CORS_ALLOWED_ORIGINS
-        value: http://localhost:5173,https://*.netlify.app,https://jeevanam360.netlify.app
+        value: http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app
       - key: MAIL_SMTP_AUTH
         value: "true"
       - key: MAIL_SMTP_STARTTLS_ENABLE
         value: "true"
       - key: MAIL_BRAND_NAME
         value: Jeevanam 360
+

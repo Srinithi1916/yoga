@@ -26,7 +26,7 @@ server:
 
 app:
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,https://*.netlify.app,https://jeevanam360.netlify.app}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app}
   mail:
     brand-name: ${MAIL_BRAND_NAME:Jeevanam 360}
     from-address: ${MAIL_FROM:}
@@ -35,3 +35,4 @@ app:
 razorpay:
   key-id: ${RAZORPAY_KEY_ID:}
   key-secret: ${RAZORPAY_KEY_SECRET:}
+

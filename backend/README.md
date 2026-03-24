@@ -16,7 +16,7 @@ Set these values before running:
 
 ```powershell
 $env:MONGODB_URI="mongodb://localhost:27017/jeevanam360"
-$env:CORS_ALLOWED_ORIGINS="http://localhost:5173,https://*.netlify.app,https://jeevanam360.netlify.app"
+$env:CORS_ALLOWED_ORIGINS="http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app"
 $env:SERVER_PORT="8080"
 
 $env:MAIL_HOST="smtp.gmail.com"
@@ -77,7 +77,7 @@ For Render:
 - Build method: `Docker`
 - Add all backend environment variables in the dashboard
 - Set `CORS_ALLOWED_ORIGINS` to something like:
-  `http://localhost:5173,https://*.netlify.app,https://jeevanam360.netlify.app`
+  `http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app`
 
 ## Live URL
 
@@ -90,3 +90,4 @@ For Render:
 - Fixed-price plans in the frontend use Razorpay checkout.
 - WhatsApp still opens from the frontend after contact form submission.
 - For Gmail SMTP, use an app password instead of your normal account password.
+
