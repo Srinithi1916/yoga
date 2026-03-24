@@ -47,10 +47,41 @@ cd backend
 mvn -DskipTests package
 ```
 
+## Docker deploy
+
+This repo includes `backend/Dockerfile` for cloud deployment.
+The app now supports host-provided `PORT` automatically.
+
+Example local Docker build:
+
+```powershell
+cd backend
+docker build -t jeevanam360-backend .
+```
+
+Example local Docker run:
+
+```powershell
+docker run -p 8080:8080 --env-file .env jeevanam360-backend
+```
+
+## Recommended production setup
+
+- Frontend: Netlify
+- Backend: Render or Railway
+- Database: MongoDB Atlas
+
+For Render:
+
+- Root directory: `backend`
+- Build method: `Docker`
+- Add all backend environment variables in the dashboard
+- Set `CORS_ALLOWED_ORIGINS` to your Netlify site URL
+
 ## Notes
 
 - Contact data and payment request data are stored in MongoDB.
-- Contact email is now sent privately from the backend through SMTP.
+- Contact email is sent privately from the backend through SMTP.
 - Fixed-price plans in the frontend use Razorpay checkout.
 - WhatsApp still opens from the frontend after contact form submission.
 - For Gmail SMTP, use an app password instead of your normal account password.

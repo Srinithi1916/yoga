@@ -1,0 +1,9 @@
+.env
+.env.*
+target
+.mvn
+.settings
+.classpath
+.project
+*.log
+*.err
