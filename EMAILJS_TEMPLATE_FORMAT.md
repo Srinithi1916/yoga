@@ -27,5 +27,5 @@ For Gmail, use an app password instead of your normal account password.
 ## Frontend env now
 
 ```env
-VITE_API_BASE_URL=https://your-backend-domain.example/api
+VITE_API_BASE_URL=https://yoga-2-i5oy.onrender.com/api
 ```

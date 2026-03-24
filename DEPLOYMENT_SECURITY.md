@@ -41,14 +41,14 @@ The Spring Boot backend must be deployed separately on a Java-capable host such 
 
 Set this in Netlify Site Settings -> Environment Variables:
 
-- `VITE_API_BASE_URL=https://your-backend-domain.com/api`
+- `VITE_API_BASE_URL=https://yoga-2-i5oy.onrender.com/api`
 
 ## Backend host environment variables
 
 Set these in your backend hosting dashboard:
 
 - `MONGODB_URI=your_mongodb_connection_string`
-- `CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com`
+- `CORS_ALLOWED_ORIGINS=http://localhost:5173,https://*.netlify.app,https://jeevanam360.netlify.app`
 - `SERVER_PORT=8080`
 - `MAIL_HOST=smtp.gmail.com`
 - `MAIL_PORT=587`
@@ -80,3 +80,8 @@ Point your backend host to its own subdomain, for example:
 - backend: `https://api.jeevanam360.com`
 
 Then set `VITE_API_BASE_URL=https://api.jeevanam360.com/api` in Netlify.
+
+## Current deployed URLs
+
+- Frontend: `https://jeevanam360.netlify.app/`
+- Backend: `https://yoga-2-i5oy.onrender.com`
