@@ -4,9 +4,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,7 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 public class ContactNotificationService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContactNotificationService.class);
     private static final DateTimeFormatter SUBMITTED_AT_FORMATTER = DateTimeFormatter
         .ofPattern("dd MMM yyyy, hh:mm a")
         .withZone(ZoneId.of("Asia/Kolkata"));
@@ -78,8 +83,24 @@ public class ContactNotificationService {
             helper.setText(buildMessageBody(message), false);
             mailSender.send(mimeMessage);
             return new ContactEmailResult(true, "Private email notification sent by the backend.");
+        } catch (MailAuthenticationException exception) {
+            LOGGER.error("SMTP authentication failed while sending enquiry notification.", exception);
+            return new ContactEmailResult(
+                false,
+                "Enquiry saved, but backend email login failed. Check MAIL_USERNAME and MAIL_PASSWORD on Render."
+            );
+        } catch (MailSendException exception) {
+            LOGGER.error("SMTP server rejected the enquiry notification.", exception);
+            return new ContactEmailResult(
+                false,
+                "Enquiry saved, but the SMTP server rejected the message. Check MAIL_FROM and CONTACT_RECEIVER_EMAIL."
+            );
         } catch (MailException | MessagingException exception) {
-            return new ContactEmailResult(false, "Enquiry saved, but backend email sending failed.");
+            LOGGER.error("SMTP delivery failed while sending enquiry notification.", exception);
+            return new ContactEmailResult(
+                false,
+                "Enquiry saved, but backend email connection failed. Check MAIL_HOST, MAIL_PORT, and TLS settings."
+            );
         }
     }
 

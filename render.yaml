@@ -13,6 +13,17 @@ services:
         value: "true"
       - key: MAIL_SMTP_STARTTLS_ENABLE
         value: "true"
+      - key: MAIL_SMTP_STARTTLS_REQUIRED
+        value: "true"
+      - key: MAIL_SMTP_SSL_TRUST
+        value: smtp.gmail.com
       - key: MAIL_BRAND_NAME
         value: Jeevanam 360
-
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_FROM
+        value: srinithisrinithi09@gmail.com
+      - key: CONTACT_RECEIVER_EMAIL
+        value: srinithisrinithi09@gmail.com
