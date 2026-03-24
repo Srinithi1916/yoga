@@ -42,8 +42,8 @@ npm run backend:build
 - Connect this GitHub repo to Netlify.
 - Build command: `npm run build`
 - Publish directory: `dist`
-- Set `VITE_API_BASE_URL` to your deployed backend URL plus `/api`
-  Example: `https://your-backend.onrender.com/api`
+- Netlify builds now use `https://yoga-2-i5oy.onrender.com/api` automatically from `netlify.toml`
+- If your backend URL changes later, update `VITE_API_BASE_URL`
 
 ### Backend hosting
 
@@ -54,6 +54,7 @@ Required backend environment variables:
 
 - `MONGODB_URI`
 - `CORS_ALLOWED_ORIGINS`
+  Example: `http://localhost:5173,https://*.netlify.app,https://your-domain.example,https://www.your-domain.example`
 - `MAIL_HOST`
 - `MAIL_PORT`
 - `MAIL_USERNAME`

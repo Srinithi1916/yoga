@@ -4,6 +4,7 @@
 
   [build.environment]
     NODE_VERSION = "20"
+    VITE_API_BASE_URL = "https://yoga-2-i5oy.onrender.com/api"
 
 [[redirects]]
   from = "/*"
