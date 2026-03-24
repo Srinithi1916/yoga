@@ -6,6 +6,7 @@ import { ContactIllustration } from '../components/Illustrations';
 import { contactDetails, contactSelectionOptions, getContactSelectionOption } from '../data/siteData';
 import {
   buildContactWhatsappUrl,
+  sendContactEmail,
   submitContactMessage,
   submitPaymentRequest,
 } from '../lib/contactWorkflow';
@@ -69,15 +70,21 @@ export default function ContactPage() {
     const whatsappUrl = buildContactWhatsappUrl(payload);
 
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-    setStatus({ type: 'submitting', message: 'Opening WhatsApp and sending your request securely...', whatsappUrl });
+    setStatus({
+      type: 'submitting',
+      message: 'Opening WhatsApp, saving your enquiry, and sending your email...',
+      whatsappUrl,
+    });
 
-    const [contactResult, paymentResult] = await Promise.allSettled([
+    const [contactResult, paymentResult, emailResult] = await Promise.allSettled([
       submitContactMessage(payload),
       submitPaymentRequest(payload),
+      sendContactEmail(payload),
     ]);
 
     const contactSaved = contactResult.status === 'fulfilled';
     const paymentSaved = paymentResult.status === 'fulfilled';
+    const emailSent = emailResult.status === 'fulfilled';
 
     const messages = ['WhatsApp was opened automatically.'];
 
@@ -86,13 +93,14 @@ export default function ContactPage() {
       if (storageStatus) {
         messages.push(storageStatus);
       }
-
-      const backendEmailStatus = contactResult.value?.emailStatus;
-      if (backendEmailStatus) {
-        messages.push(backendEmailStatus);
-      }
     } else {
-      messages.push('Backend save failed. Please make sure Spring Boot is running on http://localhost:8080.');
+      messages.push('Could not save the enquiry to MongoDB.');
+    }
+
+    if (emailSent) {
+      messages.push('Email was sent successfully from the website.');
+    } else {
+      messages.push('Email sending failed from the website. Please try again or use WhatsApp.');
     }
 
     if (paymentSaved && form.selectedPlan) {
@@ -100,12 +108,12 @@ export default function ContactPage() {
     }
 
     setStatus({
-      type: contactSaved ? 'success' : 'error',
+      type: contactSaved && emailSent ? 'success' : 'error',
       message: messages.join(' '),
       whatsappUrl,
     });
 
-    if (contactSaved) {
+    if (contactSaved && emailSent) {
       setForm(createFormFromParams(searchParams));
     }
   }

@@ -15,14 +15,9 @@ import jakarta.validation.Valid;
 public class ContactMessageController {
 
     private final ContactMessageService contactMessageService;
-    private final ContactNotificationService contactNotificationService;
 
-    public ContactMessageController(
-        ContactMessageService contactMessageService,
-        ContactNotificationService contactNotificationService
-    ) {
+    public ContactMessageController(ContactMessageService contactMessageService) {
         this.contactMessageService = contactMessageService;
-        this.contactNotificationService = contactNotificationService;
     }
 
     @PostMapping
@@ -39,7 +34,7 @@ public class ContactMessageController {
             stored = false;
         }
 
-        ContactEmailResult emailResult = contactNotificationService.sendContactNotification(message);
+        ContactEmailResult emailResult = new ContactEmailResult(false, "Email is handled by the frontend.");
         HttpStatus responseStatus = stored ? HttpStatus.CREATED : HttpStatus.ACCEPTED;
 
         return ResponseEntity
