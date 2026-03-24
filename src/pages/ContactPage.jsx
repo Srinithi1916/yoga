@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
 import SectionHeading from '../components/SectionHeading';
 import { ContactIllustration } from '../components/Illustrations';
-import { contactDetails, contactSelectionOptions, getContactSelectionOption } from '../data/siteData';
+import { contactDetails, contactSelectionOptions, getContactSelectionOption, timingHighlights, trialBenefits } from '../data/siteData';
 import {
   buildContactWhatsappUrl,
   sendContactEmail,
@@ -136,8 +136,7 @@ export default function ContactPage() {
             <div>
               <h2 className="font-display text-5xl text-rose-950">Let's begin your wellness journey</h2>
               <p className="mt-4 text-base leading-8 text-rose-900/82">
-                Reach out by email, phone, or WhatsApp. If you're not sure where to start, the free
-                trial is the easiest first step.
+                Reach out for a free trial, a plan recommendation, or a direct booking. Jeevanam 360 supports men and women with personalized guidance, flexible timing, and steady follow-up.
               </p>
             </div>
             <div className="space-y-3 text-sm text-rose-900/82">
@@ -153,14 +152,26 @@ export default function ContactPage() {
                 </p>
               ) : null}
             </div>
-            <a
-              href={contactDetails.whatsappLink}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-primary inline-flex"
-            >
-              Chat on WhatsApp
-            </a>
+            <div className="space-y-3">
+              <a
+                href={contactDetails.whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-primary inline-flex"
+              >
+                Chat on WhatsApp
+              </a>
+              <Link to="/pricing" className="btn-secondary inline-flex">
+                Start Free Trial
+              </Link>
+            </div>
+            <div className="grid gap-3 pt-2 sm:grid-cols-2">
+              {[...timingHighlights.slice(0, 2), trialBenefits[0]].map((item) => (
+                <div key={item} className="rounded-2xl bg-white/55 px-4 py-4 text-sm leading-7 text-rose-900/82 shadow-glass">
+                  {item}
+                </div>
+              ))}
+            </div>
             <ContactIllustration className="mx-auto mt-6 w-full max-w-sm" />
           </div>
         </GlassPanel>
@@ -227,7 +238,7 @@ export default function ContactPage() {
             </div>
             <div>
               <label htmlFor="message" className="mb-2 block text-sm font-semibold text-rose-900">
-                Message
+                Queries
               </label>
               <textarea
                 id="message"

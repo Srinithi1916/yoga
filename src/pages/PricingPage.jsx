@@ -3,15 +3,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
 import SectionHeading from '../components/SectionHeading';
-import { buildContactPlanHref, premiumPlan, pricingPlans } from '../data/siteData';
+import { buildContactPlanHref, premiumPlan, pricingPlans, timingHighlights, trialBenefits } from '../data/siteData';
 import { startRazorpayCheckout } from '../lib/razorpay';
-
-const offers = [
-  'Free 1-Day Trial Available',
-  'Monthly participants get a free weekend consultation',
-  'Yearly participants receive exciting rewards',
-  'Flexible timing, available all days including Sundays',
-];
 
 function PaymentStatus({ status }) {
   if (status.type === 'idle') {
@@ -53,11 +46,16 @@ export default function PricingPage() {
     <div className="space-y-8 px-4 pb-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <GlassPanel className="rounded-[2.75rem] px-6 py-10 shadow-bloom sm:px-10 lg:px-12 lg:py-14">
-          <SectionHeading
-            eyebrow="Pricing"
-            title="Plans for Every Stage"
-            description="Start gently, go deeper with structured routines, or choose full personalization with premium care."
-          />
+          <div className="flex flex-col items-center gap-6 text-center">
+            <SectionHeading
+              eyebrow="Pricing"
+              title="Plans for Every Stage"
+              description="Start gently, go deeper with structured routines, or choose full personalization with premium care."
+            />
+            <Link to="/contact" className="btn-primary">
+              Start Free Trial
+            </Link>
+          </div>
         </GlassPanel>
       </div>
 
@@ -110,7 +108,7 @@ export default function PricingPage() {
             </h3>
             <p className="mt-6 text-3xl font-bold text-rose-800">{premiumPlan.price}</p>
             <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-              Secure online payment with Razorpay
+              Highlighted Plan
             </p>
             <div className="mt-6 space-y-3">
               {premiumPlan.includes.map((item) => (
@@ -136,9 +134,9 @@ export default function PricingPage() {
 
       <div className="mx-auto max-w-7xl grid gap-5 lg:grid-cols-2">
         <GlassPanel className="rounded-[2.25rem] p-8 shadow-bloom">
-          <h2 className="font-display text-4xl font-semibold text-rose-950">Special Benefits</h2>
+          <h2 className="font-display text-4xl font-semibold text-rose-950">Free Trial + Offers</h2>
           <div className="mt-5 space-y-4">
-            {offers.map((offer) => (
+            {trialBenefits.map((offer) => (
               <div key={offer} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
                 {offer}
               </div>
@@ -146,14 +144,17 @@ export default function PricingPage() {
           </div>
         </GlassPanel>
         <GlassPanel className="rounded-[2.25rem] p-8 shadow-bloom">
-          <h2 className="font-display text-4xl font-semibold text-rose-950">Why the Premium Plan Stands Out</h2>
-          <p className="mt-4 text-base font-medium leading-8 text-rose-900/82">
-            The Premium Wellness Plan combines personalized yoga, diet guidance, weekly consultation,
-            and progress tracking inside one premium monthly path.
-          </p>
-          <button type="button" onClick={() => handleCheckout(premiumPlan)} className="btn-primary mt-8 inline-flex">
-            Pay Premium with Razorpay
-          </button>
+          <h2 className="font-display text-4xl font-semibold text-rose-950">Timings</h2>
+          <div className="mt-5 space-y-4">
+            {timingHighlights.map((item) => (
+              <div key={item} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
+                {item}
+              </div>
+            ))}
+          </div>
+          <Link to="/contact" className="btn-primary mt-8 inline-flex">
+            Start Free Trial
+          </Link>
         </GlassPanel>
       </div>
     </div>

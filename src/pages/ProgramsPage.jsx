@@ -10,17 +10,26 @@ export default function ProgramsPage() {
       <div className="mx-auto max-w-7xl">
         <GlassPanel className="rounded-[2.75rem] px-6 py-10 shadow-bloom sm:px-10 lg:px-12 lg:py-14">
           <div className="grid items-center gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-            <SectionHeading
-              align="left"
-              eyebrow="Programs"
-              title="Yoga Types + Special Programs"
-              description="Explore the guided yoga styles and focused wellness programs inside Jeevanam 360."
-            />
+            <div className="space-y-6">
+              <SectionHeading
+                align="left"
+                eyebrow="Programs"
+                title="Yoga Types + Special Programs"
+                description="Explore all nine yoga types and the focused wellness programs inside Jeevanam 360."
+              />
+              <p className="section-copy max-w-2xl">
+                These offerings are designed for men and women across different goals: flexibility,
+                recovery, emotional calmness, strength, breath support, focus, and long-term lifestyle change.
+              </p>
+              <Link to="/contact" className="btn-primary inline-flex">
+                Start Free Trial
+              </Link>
+            </div>
             <div className="overflow-hidden rounded-[2.25rem] border border-white/60 bg-white/35 p-3 shadow-glass">
               <img
-                src={siteImages.about}
-                alt="Wellness yoga session in a calm natural setting"
-                className="h-[280px] w-full rounded-[1.75rem] object-cover"
+                src={siteImages.programs}
+                alt="Inclusive group wellness session in a calm studio"
+                className="h-[320px] w-full rounded-[1.75rem] object-cover"
               />
             </div>
           </div>
@@ -30,8 +39,8 @@ export default function ProgramsPage() {
       <div className="mx-auto max-w-7xl space-y-8">
         <SectionHeading
           eyebrow="All 9 Types"
-          title="Yoga for Every Need"
-          description="Each format is personalized so the benefit connects clearly to your body, mind, and daily routine."
+          title="Yoga for Different Needs"
+          description="Each format is personalized so the benefit connects clearly to your body, mind, and everyday rhythm."
         />
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {yogaTypes.map((type, index) => (
@@ -64,7 +73,7 @@ export default function ProgramsPage() {
         <SectionHeading
           eyebrow="Focused Care"
           title="Special Programs"
-          description="Each program clearly shows who it is for and the kind of progress you can expect from steady practice."
+          description="Each special program clearly shows who it is for and the kind of progress you can expect from regular practice."
         />
         <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
           {specialPrograms.map((program, index) => (
@@ -96,7 +105,7 @@ export default function ProgramsPage() {
         <GlassPanel className="rounded-[2.5rem] px-6 py-10 text-center shadow-bloom sm:px-10">
           <h2 className="font-display text-5xl font-semibold text-rose-950">Need help choosing the right program?</h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg font-medium leading-8 text-rose-900/82">
-            Start with the free trial and get a recommendation based on your goals, pace, and schedule.
+            Start with the free trial and get a recommendation based on your goals, pace, schedule, and current wellness needs.
           </p>
           <Link to="/contact" className="btn-primary mt-8 inline-flex">
             Start Free Trial

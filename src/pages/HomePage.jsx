@@ -2,18 +2,24 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
+import ImageSlideshow from '../components/ImageSlideshow';
 import SectionHeading from '../components/SectionHeading';
 import WaveDivider from '../components/WaveDivider';
 import { BlossomSpray, FloralCorner, LeafWisp, LotusBloom } from '../components/Decorations';
 import {
+  aboutPreviewPoints,
   buildContactPlanHref,
+  communitySlides,
   contactDetails,
+  heroSlides,
   premiumPlan,
   pricingPlans,
-  siteImages,
+  progressFeatures,
   specialPrograms,
-  supportFeatures,
   testimonials,
+  timingHighlights,
+  trialBenefits,
+  whatsappCommunityFeatures,
   whyChooseUs,
   yogaTypes,
 } from '../data/siteData';
@@ -78,7 +84,7 @@ export default function HomePage() {
             <LeafWisp className="absolute left-4 top-20 hidden h-40 w-28 opacity-50 lg:block" />
             <LeafWisp className="absolute right-2 top-24 hidden h-40 w-28 -scale-x-100 opacity-50 lg:block" />
 
-            <div className="relative grid items-center gap-10 lg:grid-cols-[0.98fr_1.02fr]">
+            <div className="relative grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
               <motion.div {...reveal} className="space-y-6">
                 <p className="max-w-xl text-xl font-semibold leading-[1.65] text-rose-950/90 md:text-[2rem] md:leading-[1.45]">
                   Transform your lifestyle with a system that combines yoga, diet, and
@@ -91,8 +97,9 @@ export default function HomePage() {
                   <p className="font-display text-3xl font-semibold text-rose-900/90 md:text-[2.65rem]">
                     Complete Wellness. Not Just Yoga.
                   </p>
-                  <p className="max-w-lg text-lg font-medium leading-8 text-rose-900/82">
-                    Personalized yoga, diet support, and weekly care designed around you.
+                  <p className="max-w-xl text-lg font-medium leading-8 text-rose-900/82">
+                    Personalized programs for men and women with yoga, diet support, progress
+                    tracking, and human guidance built around your life.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-4">
@@ -116,19 +123,10 @@ export default function HomePage() {
               <motion.div
                 {...reveal}
                 transition={{ duration: 0.9, delay: 0.1 }}
-                className="relative mx-auto w-full max-w-[38rem]"
+                className="relative mx-auto w-full max-w-[40rem]"
               >
                 <div className="absolute inset-0 rounded-[3rem] bg-white/35 blur-2xl" />
-                <div className="relative overflow-hidden rounded-[3rem] border border-white/60 bg-white/30 p-3 shadow-[0_30px_70px_-28px_rgba(157,90,127,0.45)] backdrop-blur-xl">
-                  <img
-                    src={siteImages.hero}
-                    alt="Woman practicing yoga outdoors near the water"
-                    className="h-[420px] w-full rounded-[2.5rem] object-cover object-center sm:h-[480px]"
-                  />
-                  <div className="absolute inset-3 rounded-[2.5rem] bg-[radial-gradient(circle_at_top,rgba(255,245,250,0.42),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,240,247,0.22))]" />
-                  <BlossomSpray className="absolute bottom-2 left-2 h-24 w-24 opacity-80 md:h-28 md:w-28" tone="rose" />
-                  <BlossomSpray className="absolute right-2 top-3 h-20 w-20 opacity-75 md:h-24 md:w-24" tone="lavender" />
-                </div>
+                <ImageSlideshow slides={heroSlides} />
               </motion.div>
             </div>
           </GlassPanel>
@@ -141,30 +139,32 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl space-y-8">
           <SectionHeading
             title="About Jeevanam 360"
-            description="Jeevanam 360 gives you the right yoga for your needs so body, mind, and emotional wellbeing can grow together."
+            description="Jeevanam 360 is about providing the right yoga based on your needs to improve your life through a balance of body, mind, and emotional wellbeing."
           />
           <GlassPanel className="px-6 py-8 sm:px-8">
-            <div className="grid gap-4 md:grid-cols-3">
-              {[
-                'Personalized Programs',
-                'Flexible Timings',
-                'Expert Guidance (BNYS-based approach)',
-              ].map((point, index) => (
-                <motion.div
-                  key={point}
-                  whileHover={{ y: -6, scale: 1.01 }}
-                  className="rounded-[1.75rem] border border-white/50 bg-white/55 px-5 py-5 text-center text-base font-semibold text-rose-900 shadow-glass"
-                  transition={{ duration: 0.25 }}
-                >
-                  <span className="text-rose-400">0{index + 1}. </span>
-                  {point}
-                </motion.div>
-              ))}
-            </div>
-            <div className="mt-8 flex justify-center">
-              <Link to="/about" className="btn-primary">
-                Know More
-              </Link>
+            <div className="space-y-6 text-center">
+              <p className="mx-auto max-w-4xl text-lg font-semibold leading-8 text-rose-950/88 md:text-xl md:leading-9">
+                This is not a general yoga class. Every session is designed for you, whether you are
+                starting fresh, returning after a break, managing stress, or building a healthier routine.
+              </p>
+              <div className="grid gap-4 md:grid-cols-3">
+                {aboutPreviewPoints.map((point, index) => (
+                  <motion.div
+                    key={point}
+                    whileHover={{ y: -6, scale: 1.01 }}
+                    className="rounded-[1.75rem] border border-white/50 bg-white/55 px-5 py-5 text-center text-base font-semibold text-rose-900 shadow-glass"
+                    transition={{ duration: 0.25 }}
+                  >
+                    <span className="text-rose-400">0{index + 1}. </span>
+                    {point}
+                  </motion.div>
+                ))}
+              </div>
+              <div className="flex justify-center">
+                <Link to="/about" className="btn-primary">
+                  Know More
+                </Link>
+              </div>
             </div>
           </GlassPanel>
         </div>
@@ -175,7 +175,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Yoga Types"
             title="Types of Yoga"
-            description="Nine guided paths for flexibility, recovery, focus, breath, and steady everyday wellbeing."
+            description="All nine paths are available with personalization, so each practice matches your energy, goals, and stage of life."
           />
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {yogaTypes.map((type, index) => (
@@ -211,7 +211,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Special Care"
             title="Special Programs"
-            description="Focused wellness plans with durations starting from one week and progress tracked through regular follow-up."
+            description="Focused programs for recovery, emotional balance, exam support, and mindful body transformation."
           />
           <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))]">
             {specialPrograms.map((program, index) => (
@@ -245,7 +245,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Membership"
             title="Plans & Pricing"
-            description="Choose a guided plan, then move into deeper personalization whenever you are ready."
+            description="Start with a guided plan, move into deeper personalization, and keep your progress supported all along the way."
           />
           <div className="grid gap-5 xl:grid-cols-[repeat(3,minmax(0,1fr))_1.05fr]">
             {pricingPlans.map((plan, index) => (
@@ -319,52 +319,91 @@ export default function HomePage() {
             </motion.article>
           </div>
           <PaymentStatus status={paymentStatus} />
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
+              <h3 className="font-display text-4xl text-rose-950">Special Benefits</h3>
+              <div className="mt-5 space-y-3">
+                {trialBenefits.map((benefit) => (
+                  <div key={benefit} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
+                    {benefit}
+                  </div>
+                ))}
+              </div>
+            </GlassPanel>
+            <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
+              <h3 className="font-display text-4xl text-rose-950">Timings</h3>
+              <div className="mt-5 space-y-3">
+                {timingHighlights.map((timing) => (
+                  <div key={timing} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
+                    {timing}
+                  </div>
+                ))}
+              </div>
+            </GlassPanel>
+          </div>
         </div>
       </section>
 
       <section className="px-4 pt-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl grid gap-5 lg:grid-cols-4">
-          {whyChooseUs.map((item, index) => (
-            <motion.article
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: index * 0.06 }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="glass-card rounded-[2rem] p-6 text-center shadow-bloom"
-            >
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/70 font-display text-3xl text-rose-500 shadow-glass">
-                {index + 1}
-              </div>
-              <h3 className="font-display text-3xl font-semibold text-rose-950">{item.title}</h3>
-              <p className="mt-3 text-sm font-medium leading-7 text-rose-900/82">{item.description}</p>
-            </motion.article>
-          ))}
+        <div className="mx-auto max-w-7xl space-y-8">
+          <SectionHeading
+            eyebrow="Why Jeevanam 360"
+            title="Why Choose Us"
+            description="Personalized care, natural guidance, flexible scheduling, and measurable progress all come together here."
+          />
+          <div className="grid gap-5 lg:grid-cols-4">
+            {whyChooseUs.map((item, index) => (
+              <motion.article
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.55, delay: index * 0.06 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="glass-card rounded-[2rem] p-6 text-center shadow-bloom"
+              >
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/70 font-display text-3xl text-rose-500 shadow-glass">
+                  {index + 1}
+                </div>
+                <h3 className="font-display text-3xl font-semibold text-rose-950">{item.title}</h3>
+                <p className="mt-3 text-sm font-medium leading-7 text-rose-900/82">{item.description}</p>
+              </motion.article>
+            ))}
+          </div>
         </div>
       </section>
 
       <section className="px-4 pt-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <GlassPanel className="rounded-[2.5rem] px-6 py-8 sm:px-8 lg:px-10">
-            <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-              <div>
-                <SectionHeading
-                  align="left"
-                  eyebrow="Support"
-                  title="Progress Tracking + WhatsApp"
-                  description="Your growth is measured every week with feedback, assessments, and supportive follow-up."
-                />
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {supportFeatures.map((feature) => (
-                  <div key={feature} className="rounded-[1.75rem] bg-white/55 px-5 py-5 text-sm font-medium leading-7 text-rose-900/82 shadow-glass">
+        <div className="mx-auto max-w-7xl space-y-8">
+          <SectionHeading
+            eyebrow="Support System"
+            title="Progress Tracking + WhatsApp Community"
+            description="Your growth is reviewed weekly, and the support continues between sessions with reminders, feedback, and direct connection."
+          />
+          <div className="grid gap-5 lg:grid-cols-[0.9fr_0.9fr_1.1fr] lg:items-stretch">
+            <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
+              <h3 className="font-display text-4xl text-rose-950">Progress Tracking</h3>
+              <div className="mt-5 space-y-3">
+                {progressFeatures.map((feature) => (
+                  <div key={feature} className="rounded-2xl bg-white/55 px-4 py-4 text-sm leading-7 text-rose-900/82">
                     {feature}
                   </div>
                 ))}
               </div>
-            </div>
-          </GlassPanel>
+            </GlassPanel>
+            <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
+              <h3 className="font-display text-4xl text-rose-950">WhatsApp Community</h3>
+              <div className="mt-5 space-y-3">
+                {whatsappCommunityFeatures.map((feature) => (
+                  <div key={feature} className="rounded-2xl bg-white/55 px-4 py-4 text-sm leading-7 text-rose-900/82">
+                    {feature}
+                  </div>
+                ))}
+              </div>
+            </GlassPanel>
+            <ImageSlideshow slides={communitySlides} imageClassName="h-[420px] sm:h-[460px]" />
+          </div>
         </div>
       </section>
 
@@ -373,7 +412,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Results"
             title="Testimonials"
-            description="A few words from women who chose a softer, more personal wellness path with Jeevanam 360."
+            description="A few words from people who chose a calmer, more personal wellness path with Jeevanam 360."
           />
           <div className="grid gap-5 lg:grid-cols-3">
             {testimonials.map((testimonial, index) => (
