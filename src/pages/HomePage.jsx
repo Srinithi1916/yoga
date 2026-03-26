@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
@@ -10,7 +9,6 @@ import { BlossomSpray, FloralCorner, LeafWisp, LotusBloom } from '../components/
 import {
   aboutPreviewPoints,
   brandDetails,
-  buildContactPlanHref,
   communitySlides,
   contactDetails,
   heroSlides,
@@ -19,14 +17,9 @@ import {
   progressFeatures,
   specialPrograms,
   testimonials,
-  timingHighlights,
-  trialBenefits,
   whatsappCommunityFeatures,
-  whyChooseUs,
   yogaTypes,
 } from '../data/siteData';
-import { useAuth } from '../context/AuthContext';
-import { startRazorpayCheckout } from '../lib/razorpay';
 
 const reveal = {
   initial: { opacity: 0, y: 24 },
@@ -35,58 +28,14 @@ const reveal = {
   transition: { duration: 0.7 },
 };
 
-const homeReviewItems = [
-  yogaTypes[0],
-  yogaTypes[4],
-  specialPrograms[0],
-  specialPrograms[1],
-  pricingPlans[0],
-  premiumPlan,
-].map((item) => ({
+const homeReviewItems = [...yogaTypes, ...specialPrograms, ...pricingPlans, premiumPlan].map((item) => ({
   title: item.title,
   reviewItemId: item.reviewItemId,
   reviewItemType: item.reviewItemType,
   reviewItemTypeLabel: item.reviewItemTypeLabel,
 }));
 
-function PaymentStatus({ status }) {
-  if (status.type === 'idle') {
-    return null;
-  }
-
-  const palette =
-    status.type === 'success'
-      ? 'border-emerald-200/70 bg-emerald-50/70 text-emerald-900'
-      : status.type === 'error'
-        ? 'border-rose-200/70 bg-rose-50/70 text-rose-900'
-        : 'border-white/60 bg-white/60 text-rose-900';
-
-  return (
-    <div className={`mt-5 rounded-[1.75rem] border px-5 py-4 text-sm leading-7 shadow-glass ${palette}`}>
-      {status.message}
-    </div>
-  );
-}
-
 export default function HomePage() {
-  const [paymentStatus, setPaymentStatus] = useState({ type: 'idle', message: '' });
-  const { user } = useAuth();
-
-  async function handleCheckout(plan) {
-    try {
-      await startRazorpayCheckout({
-        plan,
-        customer: user ? { name: user.name, email: user.email, whatsapp: user.phone } : {},
-        onStatusChange: (type, message) => setPaymentStatus({ type, message }),
-      });
-    } catch (error) {
-      setPaymentStatus({
-        type: 'error',
-        message: error.message || 'Online payment is unavailable. Please contact us on WhatsApp.',
-      });
-    }
-  }
-
   return (
     <div className="space-y-2">
       <section className="px-4 sm:px-6 lg:px-8">
@@ -113,7 +62,7 @@ export default function HomePage() {
                     {brandDetails.name}
                   </h1>
                   <p className="font-display text-3xl font-semibold text-rose-900/90 md:text-[2.65rem]">
-                    {brandDetails.supportLine}
+                    Yoga | Wellness | Balance
                   </p>
                   <p className="max-w-xl text-lg font-medium leading-8 text-rose-900/82">
                     {brandDetails.promise}. Personalized care with yoga, guidance, and steady support.
@@ -256,140 +205,6 @@ export default function HomePage() {
 
       <WaveDivider className="pt-6" fill="rgba(255, 246, 251, 0.42)" />
 
-      <section className="px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl space-y-8">
-          <SectionHeading
-            eyebrow="Membership"
-            title="Plans & Pricing"
-            description="Simple plans with personal guidance."
-          />
-          <div className="grid gap-5 xl:grid-cols-[repeat(3,minmax(0,1fr))_1.05fr]">
-            {pricingPlans.map((plan, index) => (
-              <motion.article
-                key={plan.title}
-                initial={{ opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.08 }}
-                whileHover={{ y: -10, scale: 1.02 }}
-                className="glass-card rounded-[2rem] p-6 shadow-bloom"
-              >
-                <h3 className="font-display text-4xl font-semibold text-rose-950">{plan.title}</h3>
-                <p className="mt-5 text-2xl font-bold text-rose-800">{plan.price}</p>
-                <p className="mt-4 text-base font-medium leading-7 text-rose-900/82">{plan.description}</p>
-                {plan.amount ? (
-                  <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-                    Payment support on WhatsApp
-                  </p>
-                ) : null}
-                {plan.amount ? (
-                  <button
-                    type="button"
-                    onClick={() => handleCheckout(plan)}
-                    className="btn-primary mt-8 w-full justify-center"
-                  >
-                    {plan.cta}
-                  </button>
-                ) : (
-                  <Link to={buildContactPlanHref(plan)} className="btn-primary mt-8 w-full justify-center">
-                    {plan.cta}
-                  </Link>
-                )}
-              </motion.article>
-            ))}
-
-            <motion.article
-              initial={{ opacity: 0, y: 22 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              whileHover={{ y: -10, scale: 1.02 }}
-              className="relative overflow-hidden rounded-[2rem] border border-white/50 bg-white/55 p-7 shadow-[0_28px_80px_-30px_rgba(193,83,131,0.55)] backdrop-blur-xl"
-            >
-              <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-fuchsia-400 via-rose-300 to-orange-200" />
-              <p className="font-display text-5xl font-semibold leading-none text-rose-950">
-                Premium
-                <span className="mt-1 block text-[2.25rem] leading-none">Wellness Plan</span>
-              </p>
-              <p className="mt-6 text-3xl font-bold text-rose-800">{premiumPlan.price}</p>
-              <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-                Payment support on WhatsApp
-              </p>
-              <div className="mt-6 space-y-3">
-                {premiumPlan.includes.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-medium text-rose-900/85">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-200/80 text-xs font-bold text-rose-700">
-                      +
-                    </span>
-                    {item}
-                  </div>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => handleCheckout(premiumPlan)}
-                className="btn-primary mt-8 w-full justify-center"
-              >
-                Pay Now
-              </button>
-            </motion.article>
-          </div>
-          <PaymentStatus status={paymentStatus} />
-
-          <div className="grid gap-5 lg:grid-cols-2">
-            <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
-              <h3 className="font-display text-4xl text-rose-950">Benefits</h3>
-              <div className="mt-5 space-y-3">
-                {trialBenefits.map((benefit) => (
-                  <div key={benefit} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
-                    {benefit}
-                  </div>
-                ))}
-              </div>
-            </GlassPanel>
-            <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
-              <h3 className="font-display text-4xl text-rose-950">Timings</h3>
-              <div className="mt-5 space-y-3">
-                {timingHighlights.map((timing) => (
-                  <div key={timing} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
-                    {timing}
-                  </div>
-                ))}
-              </div>
-            </GlassPanel>
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 pt-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl space-y-8">
-          <SectionHeading
-            eyebrow="Why Jeevanam 360"
-            title="Why Choose Us"
-            description="Personal care, flexible timing, and clear progress."
-          />
-          <div className="grid gap-5 lg:grid-cols-4">
-            {whyChooseUs.map((item, index) => (
-              <motion.article
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: index * 0.06 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="glass-card rounded-[2rem] p-6 text-center shadow-bloom"
-              >
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/70 font-display text-3xl text-rose-500 shadow-glass">
-                  {index + 1}
-                </div>
-                <h3 className="font-display text-3xl font-semibold text-rose-950">{item.title}</h3>
-                <p className="mt-3 text-sm font-medium leading-7 text-rose-900/82">{item.description}</p>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="px-4 pt-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl space-y-8">
           <SectionHeading
@@ -453,18 +268,8 @@ export default function HomePage() {
       </section>
 
       <section className="px-4 pt-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl space-y-8">
-          <SectionHeading
-            eyebrow="Member Reviews"
-            title="Public Reviews"
-            description="Read member feedback."
-          />
-          <ReviewSection
-            anchorId="home-featured-reviews"
-            title="Featured Reviews"
-            description="Yoga, programs, and plans."
-            items={homeReviewItems}
-          />
+        <div className="mx-auto max-w-7xl">
+          <ReviewSection anchorId="home-featured-reviews" title="Reviews" items={homeReviewItems} mode="feed" />
         </div>
       </section>
 
@@ -488,3 +293,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+

@@ -7,8 +7,6 @@ import {
   brandDetails,
   contactSelectionOptions,
   getContactSelectionOption,
-  timingHighlights,
-  trialBenefits,
 } from '../data/siteData';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -170,13 +168,6 @@ export default function ContactPage() {
               <Link to="/pricing" className="btn-secondary inline-flex">
                 View Pricing
               </Link>
-            </div>
-            <div className="grid gap-3 pt-2 sm:grid-cols-2">
-              {[...timingHighlights.slice(0, 2), trialBenefits[0], brandDetails.supportLine].map((item) => (
-                <div key={item} className="rounded-2xl bg-white/55 px-4 py-4 text-sm leading-7 text-rose-900/82 shadow-glass">
-                  {item}
-                </div>
-              ))}
             </div>
             <ContactIllustration className="mx-auto mt-6 w-full max-w-sm" />
           </div>
