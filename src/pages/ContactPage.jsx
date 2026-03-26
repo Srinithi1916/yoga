@@ -3,7 +3,14 @@ import { Link, useSearchParams } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
 import SectionHeading from '../components/SectionHeading';
 import { ContactIllustration } from '../components/Illustrations';
-import { contactDetails, contactSelectionOptions, getContactSelectionOption, timingHighlights, trialBenefits } from '../data/siteData';
+import {
+  brandDetails,
+  contactSelectionOptions,
+  getContactSelectionOption,
+  timingHighlights,
+  trialBenefits,
+} from '../data/siteData';
+import { useAuth } from '../context/AuthContext';
 import {
   buildContactWhatsappUrl,
   sendContactEmail,
@@ -12,8 +19,6 @@ import {
 } from '../lib/contactWorkflow';
 
 const emptyForm = {
-  name: '',
-  email: '',
   whatsapp: '',
   selectedPlan: '',
   planPrice: '',
@@ -21,9 +26,10 @@ const emptyForm = {
   message: '',
 };
 
-function createFormFromParams(searchParams) {
+function createFormFromParams(searchParams, phone = '') {
   return {
     ...emptyForm,
+    whatsapp: phone,
     selectedPlan: searchParams.get('plan') || '',
     planPrice: searchParams.get('planPrice') || '',
     amount: searchParams.get('amount') || '',
@@ -32,17 +38,19 @@ function createFormFromParams(searchParams) {
 
 export default function ContactPage() {
   const [searchParams] = useSearchParams();
-  const [form, setForm] = useState(() => createFormFromParams(searchParams));
+  const { user, token } = useAuth();
+  const [form, setForm] = useState(() => createFormFromParams(searchParams, user?.phone || ''));
   const [status, setStatus] = useState({ type: 'idle', message: '', whatsappUrl: '' });
 
   useEffect(() => {
     setForm((current) => ({
       ...current,
+      whatsapp: current.whatsapp || user?.phone || '',
       selectedPlan: searchParams.get('plan') || current.selectedPlan,
       planPrice: searchParams.get('planPrice') || current.planPrice,
       amount: searchParams.get('amount') || current.amount,
     }));
-  }, [searchParams]);
+  }, [searchParams, user]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -63,8 +71,11 @@ export default function ContactPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
     const payload = {
       ...form,
+      name: user.name,
+      email: user.email,
       source: 'website-contact-form',
     };
     const whatsappUrl = buildContactWhatsappUrl(payload);
@@ -72,13 +83,13 @@ export default function ContactPage() {
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     setStatus({
       type: 'submitting',
-      message: 'Opening WhatsApp, saving your enquiry, and sending your email...',
+      message: 'Opening WhatsApp and sending your enquiry...',
       whatsappUrl,
     });
 
     const [contactResult, paymentResult, emailResult] = await Promise.allSettled([
-      submitContactMessage(payload),
-      submitPaymentRequest(payload),
+      submitContactMessage(payload, token),
+      submitPaymentRequest(payload, token),
       sendContactEmail(payload),
     ]);
 
@@ -86,7 +97,7 @@ export default function ContactPage() {
     const paymentSaved = paymentResult.status === 'fulfilled';
     const emailSent = emailResult.status === 'fulfilled';
 
-    const messages = ['WhatsApp was opened automatically.'];
+    const messages = ['WhatsApp opened.'];
 
     if (contactSaved) {
       const storageStatus = contactResult.value?.storageStatus;
@@ -94,17 +105,17 @@ export default function ContactPage() {
         messages.push(storageStatus);
       }
     } else {
-      messages.push('Could not save the enquiry to MongoDB.');
+      messages.push('Could not save your enquiry.');
     }
 
     if (emailSent) {
-      messages.push('Email was sent successfully from the website.');
+      messages.push('Email sent successfully.');
     } else {
-      messages.push('Email sending failed from the website. Please try again or use WhatsApp.');
+      messages.push('Email failed. Please use WhatsApp.');
     }
 
     if (paymentSaved && form.selectedPlan) {
-      messages.push('Payment request record was created.');
+      messages.push('Payment request saved.');
     }
 
     setStatus({
@@ -114,7 +125,7 @@ export default function ContactPage() {
     });
 
     if (contactSaved && emailSent) {
-      setForm(createFormFromParams(searchParams));
+      setForm(createFormFromParams(searchParams, user?.phone || ''));
     }
   }
 
@@ -125,7 +136,7 @@ export default function ContactPage() {
           <SectionHeading
             eyebrow="Contact"
             title="Contact & Booking"
-            description="Share your details and queries. We will contact you within 24 hours."
+            description="Your saved details are ready. Send your message here."
           />
         </GlassPanel>
       </div>
@@ -134,39 +145,34 @@ export default function ContactPage() {
         <GlassPanel className="rounded-[2.5rem] p-8 shadow-bloom">
           <div className="space-y-5">
             <div>
-              <h2 className="font-display text-5xl text-rose-950">Let's begin your wellness journey</h2>
+              <h2 className="font-display text-5xl text-rose-950">{brandDetails.promise}</h2>
               <p className="mt-4 text-base leading-8 text-rose-900/82">
-                Reach out for a free trial, a plan recommendation, or a direct booking. Jeevanam 360 supports men and women with personalized guidance, flexible timing, and steady follow-up.
+                Your saved details are ready. Share your goal or question.
               </p>
             </div>
-            <div className="space-y-3 text-sm text-rose-900/82">
+            <div className="space-y-3 rounded-[1.75rem] bg-white/55 px-5 py-5 text-sm leading-7 text-rose-900/82 shadow-glass">
               <p>
-                <span className="font-semibold">Email:</span> {contactDetails.email}
+                <span className="font-semibold">Name:</span> {user.name}
               </p>
               <p>
-                <span className="font-semibold">Phone:</span> {contactDetails.phone}
+                <span className="font-semibold">Email:</span> {user.email}
+              </p>
+              <p>
+                <span className="font-semibold">WhatsApp:</span> {user.phone}
               </p>
               {form.selectedPlan ? (
                 <p>
-                  <span className="font-semibold">Selected Plan:</span> {form.selectedPlan}
+                  <span className="font-semibold">Plan:</span> {form.selectedPlan}
                 </p>
               ) : null}
             </div>
             <div className="space-y-3">
-              <a
-                href={contactDetails.whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary inline-flex"
-              >
-                Chat on WhatsApp
-              </a>
               <Link to="/pricing" className="btn-secondary inline-flex">
-                Start Free Trial
+                View Pricing
               </Link>
             </div>
             <div className="grid gap-3 pt-2 sm:grid-cols-2">
-              {[...timingHighlights.slice(0, 2), trialBenefits[0]].map((item) => (
+              {[...timingHighlights.slice(0, 2), trialBenefits[0], brandDetails.supportLine].map((item) => (
                 <div key={item} className="rounded-2xl bg-white/55 px-4 py-4 text-sm leading-7 text-rose-900/82 shadow-glass">
                   {item}
                 </div>
@@ -179,35 +185,8 @@ export default function ContactPage() {
         <GlassPanel className="rounded-[2.5rem] p-8 shadow-bloom">
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="name" className="mb-2 block text-sm font-semibold text-rose-900">
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-                className="w-full rounded-2xl border border-white/60 bg-white/60 px-4 py-3 text-rose-950 outline-none transition focus:border-rose-300 focus:bg-white/80"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-semibold text-rose-900">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                className="w-full rounded-2xl border border-white/60 bg-white/60 px-4 py-3 text-rose-950 outline-none transition focus:border-rose-300 focus:bg-white/80"
-              />
-            </div>
-            <div>
               <label htmlFor="whatsapp" className="mb-2 block text-sm font-semibold text-rose-900">
-                WhatsApp
+                WhatsApp Number
               </label>
               <input
                 id="whatsapp"
@@ -238,7 +217,7 @@ export default function ContactPage() {
             </div>
             <div>
               <label htmlFor="message" className="mb-2 block text-sm font-semibold text-rose-900">
-                Queries
+                Message
               </label>
               <textarea
                 id="message"
@@ -255,7 +234,7 @@ export default function ContactPage() {
               disabled={status.type === 'submitting'}
               className="btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {status.type === 'submitting' ? 'Sending...' : 'Submit'}
+              {status.type === 'submitting' ? 'Sending...' : 'Send Message'}
             </button>
             {status.type !== 'idle' ? (
               <div className="rounded-2xl bg-white/60 px-4 py-4 text-sm leading-7 text-rose-900/85">
@@ -267,7 +246,7 @@ export default function ContactPage() {
                     rel="noreferrer"
                     className="btn-secondary mt-4 inline-flex"
                   >
-                    Open WhatsApp Again
+                    Open WhatsApp
                   </a>
                 ) : null}
               </div>

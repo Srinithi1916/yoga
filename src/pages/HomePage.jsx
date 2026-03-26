@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
 import ImageSlideshow from '../components/ImageSlideshow';
+import ReviewSection from '../components/ReviewSection';
 import SectionHeading from '../components/SectionHeading';
 import WaveDivider from '../components/WaveDivider';
 import { BlossomSpray, FloralCorner, LeafWisp, LotusBloom } from '../components/Decorations';
 import {
   aboutPreviewPoints,
+  brandDetails,
   buildContactPlanHref,
   communitySlides,
   contactDetails,
@@ -23,6 +25,7 @@ import {
   whyChooseUs,
   yogaTypes,
 } from '../data/siteData';
+import { useAuth } from '../context/AuthContext';
 import { startRazorpayCheckout } from '../lib/razorpay';
 
 const reveal = {
@@ -31,6 +34,20 @@ const reveal = {
   viewport: { once: true, amount: 0.2 },
   transition: { duration: 0.7 },
 };
+
+const homeReviewItems = [
+  yogaTypes[0],
+  yogaTypes[4],
+  specialPrograms[0],
+  specialPrograms[1],
+  pricingPlans[0],
+  premiumPlan,
+].map((item) => ({
+  title: item.title,
+  reviewItemId: item.reviewItemId,
+  reviewItemType: item.reviewItemType,
+  reviewItemTypeLabel: item.reviewItemTypeLabel,
+}));
 
 function PaymentStatus({ status }) {
   if (status.type === 'idle') {
@@ -53,17 +70,19 @@ function PaymentStatus({ status }) {
 
 export default function HomePage() {
   const [paymentStatus, setPaymentStatus] = useState({ type: 'idle', message: '' });
+  const { user } = useAuth();
 
   async function handleCheckout(plan) {
     try {
       await startRazorpayCheckout({
         plan,
+        customer: user ? { name: user.name, email: user.email, whatsapp: user.phone } : {},
         onStatusChange: (type, message) => setPaymentStatus({ type, message }),
       });
     } catch (error) {
       setPaymentStatus({
         type: 'error',
-        message: error.message || 'Razorpay could not open right now.',
+        message: error.message || 'Online payment is unavailable. Please contact us on WhatsApp.',
       });
     }
   }
@@ -87,19 +106,17 @@ export default function HomePage() {
             <div className="relative grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
               <motion.div {...reveal} className="space-y-6">
                 <p className="max-w-xl text-xl font-semibold leading-[1.65] text-rose-950/90 md:text-[2rem] md:leading-[1.45]">
-                  Transform your lifestyle with a system that combines yoga, diet, and
-                  personalized care all in one place.
+                  Personalized yoga, care, and support for daily life.
                 </p>
                 <div className="space-y-3">
                   <h1 className="font-display text-6xl font-semibold leading-none text-rose-950 text-shadow-soft sm:text-7xl md:text-[5.5rem]">
-                    Jeevanam 360
+                    {brandDetails.name}
                   </h1>
                   <p className="font-display text-3xl font-semibold text-rose-900/90 md:text-[2.65rem]">
-                    Complete Wellness. Not Just Yoga.
+                    {brandDetails.supportLine}
                   </p>
                   <p className="max-w-xl text-lg font-medium leading-8 text-rose-900/82">
-                    Personalized programs for men and women with yoga, diet support, progress
-                    tracking, and human guidance built around your life.
+                    {brandDetails.promise}. Personalized care with yoga, guidance, and steady support.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-4">
@@ -107,7 +124,7 @@ export default function HomePage() {
                     to="/contact"
                     className="btn-secondary min-w-[158px] bg-purple-400/70 text-white hover:bg-purple-400/85"
                   >
-                    Free Trial
+                    Start Trial
                   </Link>
                   <a
                     href={contactDetails.whatsappLink}
@@ -115,7 +132,7 @@ export default function HomePage() {
                     rel="noreferrer"
                     className="btn-primary min-w-[158px]"
                   >
-                    Join Now
+                    WhatsApp
                   </a>
                 </div>
               </motion.div>
@@ -139,13 +156,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl space-y-8">
           <SectionHeading
             title="About Jeevanam 360"
-            description="Jeevanam 360 is about providing the right yoga based on your needs to improve your life through a balance of body, mind, and emotional wellbeing."
+            description="Personalized yoga for body, mind, and balance."
           />
           <GlassPanel className="px-6 py-8 sm:px-8">
             <div className="space-y-6 text-center">
               <p className="mx-auto max-w-4xl text-lg font-semibold leading-8 text-rose-950/88 md:text-xl md:leading-9">
-                This is not a general yoga class. Every session is designed for you, whether you are
-                starting fresh, returning after a break, managing stress, or building a healthier routine.
+                Every session is built around your goals, routine, and pace.
               </p>
               <div className="grid gap-4 md:grid-cols-3">
                 {aboutPreviewPoints.map((point, index) => (
@@ -162,7 +178,7 @@ export default function HomePage() {
               </div>
               <div className="flex justify-center">
                 <Link to="/about" className="btn-primary">
-                  Know More
+                  Learn More
                 </Link>
               </div>
             </div>
@@ -175,7 +191,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Yoga Types"
             title="Types of Yoga"
-            description="All nine paths are available with personalization, so each practice matches your energy, goals, and stage of life."
+            description="Nine yoga paths, tailored for you."
           />
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             {yogaTypes.map((type, index) => (
@@ -211,7 +227,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Special Care"
             title="Special Programs"
-            description="Focused programs for recovery, emotional balance, exam support, and mindful body transformation."
+            description="Focused care for recovery, calm, focus, and change."
           />
           <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))]">
             {specialPrograms.map((program, index) => (
@@ -245,7 +261,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Membership"
             title="Plans & Pricing"
-            description="Start with a guided plan, move into deeper personalization, and keep your progress supported all along the way."
+            description="Simple plans with personal guidance."
           />
           <div className="grid gap-5 xl:grid-cols-[repeat(3,minmax(0,1fr))_1.05fr]">
             {pricingPlans.map((plan, index) => (
@@ -263,7 +279,7 @@ export default function HomePage() {
                 <p className="mt-4 text-base font-medium leading-7 text-rose-900/82">{plan.description}</p>
                 {plan.amount ? (
                   <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-                    Secure online payment with Razorpay
+                    Payment support on WhatsApp
                   </p>
                 ) : null}
                 {plan.amount ? (
@@ -297,7 +313,7 @@ export default function HomePage() {
               </p>
               <p className="mt-6 text-3xl font-bold text-rose-800">{premiumPlan.price}</p>
               <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-                Secure online payment with Razorpay
+                Payment support on WhatsApp
               </p>
               <div className="mt-6 space-y-3">
                 {premiumPlan.includes.map((item) => (
@@ -314,7 +330,7 @@ export default function HomePage() {
                 onClick={() => handleCheckout(premiumPlan)}
                 className="btn-primary mt-8 w-full justify-center"
               >
-                Pay with Razorpay
+                Pay Now
               </button>
             </motion.article>
           </div>
@@ -322,7 +338,7 @@ export default function HomePage() {
 
           <div className="grid gap-5 lg:grid-cols-2">
             <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
-              <h3 className="font-display text-4xl text-rose-950">Special Benefits</h3>
+              <h3 className="font-display text-4xl text-rose-950">Benefits</h3>
               <div className="mt-5 space-y-3">
                 {trialBenefits.map((benefit) => (
                   <div key={benefit} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
@@ -350,7 +366,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Why Jeevanam 360"
             title="Why Choose Us"
-            description="Personalized care, natural guidance, flexible scheduling, and measurable progress all come together here."
+            description="Personal care, flexible timing, and clear progress."
           />
           <div className="grid gap-5 lg:grid-cols-4">
             {whyChooseUs.map((item, index) => (
@@ -378,8 +394,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl space-y-8">
           <SectionHeading
             eyebrow="Support System"
-            title="Progress Tracking + WhatsApp Community"
-            description="Your growth is reviewed weekly, and the support continues between sessions with reminders, feedback, and direct connection."
+            title="Progress + WhatsApp Support"
+            description="Weekly reviews and daily support to keep you consistent."
           />
           <div className="grid gap-5 lg:grid-cols-[0.9fr_0.9fr_1.1fr] lg:items-stretch">
             <GlassPanel className="rounded-[2.25rem] p-7 shadow-bloom">
@@ -412,7 +428,7 @@ export default function HomePage() {
           <SectionHeading
             eyebrow="Results"
             title="Testimonials"
-            description="A few words from people who chose a calmer, more personal wellness path with Jeevanam 360."
+            description="Member feedback from Jeevanam 360."
           />
           <div className="grid gap-5 lg:grid-cols-3">
             {testimonials.map((testimonial, index) => (
@@ -436,6 +452,22 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="px-4 pt-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl space-y-8">
+          <SectionHeading
+            eyebrow="Member Reviews"
+            title="Public Reviews"
+            description="Read member feedback."
+          />
+          <ReviewSection
+            anchorId="home-featured-reviews"
+            title="Featured Reviews"
+            description="Yoga, programs, and plans."
+            items={homeReviewItems}
+          />
+        </div>
+      </section>
+
       <section className="px-4 pb-10 pt-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <GlassPanel className="rounded-[2.75rem] px-6 py-10 text-center shadow-bloom sm:px-10 sm:py-12">
@@ -443,7 +475,7 @@ export default function HomePage() {
               Start Your Free Trial Today
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg font-medium leading-8 text-rose-900/82">
-              Begin with one calm step and build a lifestyle that feels supported, personal, and sustainable.
+              Start with one step and build a steady routine.
             </p>
             <div className="mt-8 flex justify-center">
               <Link to="/contact" className="btn-primary min-w-[220px] justify-center text-lg">

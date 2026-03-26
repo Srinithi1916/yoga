@@ -7,4 +7,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface PaymentRequestRepository extends MongoRepository<PaymentRequestRecord, String> {
 
     Optional<PaymentRequestRecord> findByGatewayOrderId(String gatewayOrderId);
+
+    boolean existsByUserIdAndSelectedPlanIgnoreCase(String userId, String selectedPlan);
+
+    boolean existsByEmailIgnoreCaseAndSelectedPlanIgnoreCase(String email, String selectedPlan);
 }

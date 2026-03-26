@@ -2,9 +2,18 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
+import ReviewSection from '../components/ReviewSection';
 import SectionHeading from '../components/SectionHeading';
+import { useAuth } from '../context/AuthContext';
 import { buildContactPlanHref, premiumPlan, pricingPlans, timingHighlights, trialBenefits } from '../data/siteData';
 import { startRazorpayCheckout } from '../lib/razorpay';
+
+const pricingReviewItems = [...pricingPlans, premiumPlan].map((item) => ({
+  title: item.title,
+  reviewItemId: item.reviewItemId,
+  reviewItemType: item.reviewItemType,
+  reviewItemTypeLabel: item.reviewItemTypeLabel,
+}));
 
 function PaymentStatus({ status }) {
   if (status.type === 'idle') {
@@ -27,17 +36,25 @@ function PaymentStatus({ status }) {
 
 export default function PricingPage() {
   const [paymentStatus, setPaymentStatus] = useState({ type: 'idle', message: '' });
+  const { user } = useAuth();
 
   async function handleCheckout(plan) {
     try {
       await startRazorpayCheckout({
         plan,
+        customer: user
+          ? {
+              name: user.name,
+              email: user.email,
+              whatsapp: user.phone,
+            }
+          : {},
         onStatusChange: (type, message) => setPaymentStatus({ type, message }),
       });
     } catch (error) {
       setPaymentStatus({
         type: 'error',
-        message: error.message || 'Razorpay could not open right now.',
+        message: error.message || 'Online payment is unavailable. Please contact us on WhatsApp.',
       });
     }
   }
@@ -50,7 +67,7 @@ export default function PricingPage() {
             <SectionHeading
               eyebrow="Pricing"
               title="Plans for Every Stage"
-              description="Start gently, go deeper with structured routines, or choose full personalization with premium care."
+              description="Choose a plan that fits your pace."
             />
             <Link to="/contact" className="btn-primary">
               Start Free Trial
@@ -76,7 +93,7 @@ export default function PricingPage() {
               <p className="mt-4 text-base font-medium leading-8 text-rose-900/82">{plan.description}</p>
               {plan.amount ? (
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-                  Secure online payment with Razorpay
+                  Payment support on WhatsApp
                 </p>
               ) : null}
               {plan.amount ? (
@@ -108,7 +125,7 @@ export default function PricingPage() {
             </h3>
             <p className="mt-6 text-3xl font-bold text-rose-800">{premiumPlan.price}</p>
             <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-              Highlighted Plan
+              Payment support on WhatsApp
             </p>
             <div className="mt-6 space-y-3">
               {premiumPlan.includes.map((item) => (
@@ -125,16 +142,23 @@ export default function PricingPage() {
               onClick={() => handleCheckout(premiumPlan)}
               className="btn-primary mt-8 w-full justify-center"
             >
-              Pay with Razorpay
+              Pay Now
             </button>
           </motion.article>
         </div>
         <PaymentStatus status={paymentStatus} />
       </div>
 
+      <ReviewSection
+        anchorId="pricing-reviews"
+        title="Plan Reviews"
+        description="Member feedback on each plan."
+        items={pricingReviewItems}
+      />
+
       <div className="mx-auto max-w-7xl grid gap-5 lg:grid-cols-2">
         <GlassPanel className="rounded-[2.25rem] p-8 shadow-bloom">
-          <h2 className="font-display text-4xl font-semibold text-rose-950">Free Trial + Offers</h2>
+          <h2 className="font-display text-4xl font-semibold text-rose-950">Free Trial</h2>
           <div className="mt-5 space-y-4">
             {trialBenefits.map((offer) => (
               <div key={offer} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
@@ -160,3 +184,4 @@ export default function PricingPage() {
     </div>
   );
 }
+

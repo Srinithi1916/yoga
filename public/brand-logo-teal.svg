@@ -1,0 +1,46 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ringMain" x1="21" y1="145" x2="152" y2="33" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D8B90"/>
+      <stop offset="0.5" stop-color="#3DB7AD"/>
+      <stop offset="1" stop-color="#8EDB52"/>
+    </linearGradient>
+    <linearGradient id="ringAccent" x1="44" y1="26" x2="141" y2="142" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A7E163"/>
+      <stop offset="1" stop-color="#4FBAB6"/>
+    </linearGradient>
+    <linearGradient id="bodyGrad" x1="90" y1="37" x2="90" y2="146" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18A4A7"/>
+      <stop offset="1" stop-color="#0C6D73"/>
+    </linearGradient>
+    <radialGradient id="glowGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(90 103) rotate(90) scale(18)">
+      <stop stop-color="#F9FFD8"/>
+      <stop offset="0.55" stop-color="#E2FF88"/>
+      <stop offset="1" stop-color="#E2FF88" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="67" y="80" width="46" height="46" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+
+  <path d="M39 131C22 114 14 89 19 64C24 39 42 19 68 12" stroke="url(#ringMain)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M108 12C135 18 156 38 162 65C168 91 159 119 140 139" stroke="url(#ringAccent)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M31 119C45 142 71 157 99 157C115 157 131 152 144 143" stroke="url(#ringMain)" stroke-width="10" stroke-linecap="round"/>
+
+  <path d="M28 56C35 33 49 18 70 16C59 24 54 36 50 51C42 53 35 55 28 56Z" fill="url(#ringAccent)"/>
+  <path d="M36 55C48 38 58 27 74 21C64 32 58 42 54 55H36Z" fill="#6ED07D" opacity="0.55"/>
+
+  <path d="M69 77C72 58 79 44 90 31C101 44 108 58 111 77" stroke="url(#bodyGrad)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M90 57C77 67 70 86 70 108C70 121 74 133 82 143H98C106 133 110 121 110 108C110 86 103 67 90 57Z" fill="url(#bodyGrad)"/>
+  <circle cx="90" cy="73" r="9" fill="#0F7C82"/>
+
+  <g filter="url(#softGlow)">
+    <circle cx="90" cy="103" r="9" fill="#E5FF9A"/>
+  </g>
+  <circle cx="90" cy="103" r="5.5" fill="#F9FFF0"/>
+
+  <path d="M51 137C62 137 70 141 77 148C84 141 92 137 103 137C112 137 121 140 129 145C120 148 112 150 103 150C92 150 84 147 77 141C70 147 62 150 51 150C42 150 34 148 25 145C33 140 42 137 51 137Z" fill="url(#bodyGrad)"/>
+
+  <text x="41" y="112" fill="#0A7B81" font-size="40" font-weight="500" font-family="'Poppins', 'Segoe UI', Arial, sans-serif">3</text>
+  <text x="104" y="112" fill="#54BBB5" font-size="40" font-weight="500" font-family="'Poppins', 'Segoe UI', Arial, sans-serif">60</text>
+</svg>

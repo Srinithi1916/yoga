@@ -1,8 +1,23 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
+import ReviewSection from '../components/ReviewSection';
 import SectionHeading from '../components/SectionHeading';
-import { siteImages, specialPrograms, yogaTypes } from '../data/siteData';
+import { brandDetails, siteImages, specialPrograms, yogaTypes } from '../data/siteData';
+
+const yogaReviewItems = yogaTypes.map((item) => ({
+  title: item.title,
+  reviewItemId: item.reviewItemId,
+  reviewItemType: item.reviewItemType,
+  reviewItemTypeLabel: item.reviewItemTypeLabel,
+}));
+
+const specialProgramReviewItems = specialPrograms.map((item) => ({
+  title: item.title,
+  reviewItemId: item.reviewItemId,
+  reviewItemType: item.reviewItemType,
+  reviewItemTypeLabel: item.reviewItemTypeLabel,
+}));
 
 export default function ProgramsPage() {
   return (
@@ -15,11 +30,10 @@ export default function ProgramsPage() {
                 align="left"
                 eyebrow="Programs"
                 title="Yoga Types + Special Programs"
-                description="Explore all nine yoga types and the focused wellness programs inside Jeevanam 360."
+                description="Explore yoga types and focused care programs."
               />
               <p className="section-copy max-w-2xl">
-                These offerings are designed for men and women across different goals: flexibility,
-                recovery, emotional calmness, strength, breath support, focus, and long-term lifestyle change.
+                {brandDetails.supportLine} through personalized yoga and focused programs.
               </p>
               <Link to="/contact" className="btn-primary inline-flex">
                 Start Free Trial
@@ -40,7 +54,7 @@ export default function ProgramsPage() {
         <SectionHeading
           eyebrow="All 9 Types"
           title="Yoga for Different Needs"
-          description="Each format is personalized so the benefit connects clearly to your body, mind, and everyday rhythm."
+          description="Yoga for different needs and goals."
         />
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {yogaTypes.map((type, index) => (
@@ -67,13 +81,19 @@ export default function ProgramsPage() {
             </motion.article>
           ))}
         </div>
+        <ReviewSection
+          anchorId="program-review-yoga"
+          title="Yoga Type Reviews"
+          description="Member feedback on each yoga type."
+          items={yogaReviewItems}
+        />
       </div>
 
       <div className="mx-auto max-w-7xl space-y-8">
         <SectionHeading
           eyebrow="Focused Care"
           title="Special Programs"
-          description="Each special program clearly shows who it is for and the kind of progress you can expect from regular practice."
+          description="Focused programs for specific needs."
         />
         <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
           {specialPrograms.map((program, index) => (
@@ -91,21 +111,27 @@ export default function ProgramsPage() {
                 {program.duration}
               </p>
               <p className="mt-4 text-sm font-medium leading-7 text-rose-900/80">
-                <span className="font-semibold">Who it is for:</span> {program.audience}
+                <span className="font-semibold">For:</span> {program.audience}
               </p>
               <p className="mt-4 rounded-2xl bg-white/50 px-4 py-4 text-sm leading-7 text-rose-900/84">
-                <span className="font-semibold">Expected result:</span> {program.results}
+                <span className="font-semibold">Result:</span> {program.results}
               </p>
             </motion.article>
           ))}
         </div>
+        <ReviewSection
+          anchorId="program-review-special"
+          title="Special Program Reviews"
+          description="Member feedback on each special program."
+          items={specialProgramReviewItems}
+        />
       </div>
 
       <div className="mx-auto max-w-6xl">
         <GlassPanel className="rounded-[2.5rem] px-6 py-10 text-center shadow-bloom sm:px-10">
-          <h2 className="font-display text-5xl font-semibold text-rose-950">Need help choosing the right program?</h2>
+          <h2 className="font-display text-5xl font-semibold text-rose-950">Need help choosing a program?</h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg font-medium leading-8 text-rose-900/82">
-            Start with the free trial and get a recommendation based on your goals, pace, schedule, and current wellness needs.
+            Start with a free trial and get the right recommendation.
           </p>
           <Link to="/contact" className="btn-primary mt-8 inline-flex">
             Start Free Trial

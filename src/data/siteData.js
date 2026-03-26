@@ -1,3 +1,25 @@
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function withReviewMeta(items, type, label, prefix) {
+  return items.map((item) => ({
+    ...item,
+    reviewItemId: `${prefix}-${slugify(item.title)}`,
+    reviewItemType: type,
+    reviewItemTypeLabel: label,
+  }));
+}
+
+export const brandDetails = {
+  name: 'JEEVANAM 360',
+  supportLine: 'Yoga | Wellness | Balance',
+  promise: 'Harmony for Body, Mind & Soul',
+};
+
 export const navigationLinks = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
@@ -18,22 +40,22 @@ export const siteImages = {
 
 export const heroSlides = [
   {
-    title: 'Personalized wellness for men and women',
-    description: 'Yoga, diet support, and guided care that adapt to your body, routine, and goals.',
+    title: 'Yoga | Wellness | Balance',
+    description: 'Personalized yoga, care, and support for real life.',
     imageUrl:
       'https://images.pexels.com/photos/9225395/pexels-photo-9225395.jpeg?auto=compress&cs=tinysrgb&w=1400',
     imageAlt: 'Man and woman practicing yoga on a deck in a peaceful forest setting',
   },
   {
-    title: 'Calm routines for students, professionals, and families',
-    description: 'From stress relief to focus and recovery, each session is designed around real life.',
+    title: 'Harmony for Body, Mind & Soul',
+    description: 'Calm wellness for students, professionals, and families.',
     imageUrl:
       'https://images.pexels.com/photos/29841240/pexels-photo-29841240.jpeg?auto=compress&cs=tinysrgb&w=1400',
     imageAlt: 'Man meditating outdoors in a quiet green setting',
   },
   {
-    title: 'Progress you can feel and measure',
-    description: 'Weekly follow-up, WhatsApp support, and practical care keep the journey consistent.',
+    title: 'Support that stays personal',
+    description: 'Weekly follow-up and WhatsApp support keep you on track.',
     imageUrl:
       'https://images.pexels.com/photos/9065234/pexels-photo-9065234.jpeg?auto=compress&cs=tinysrgb&w=1400',
     imageAlt: 'Supportive wellness consultation between two adults',
@@ -67,125 +89,131 @@ export const communitySlides = [
 export const aboutPreviewPoints = [
   'Personalized Programs',
   'Flexible Timings',
-  'Expert Guidance (BNYS-based approach)',
+  'Expert Guidance',
 ];
 
-export const yogaTypes = [
+const yogaTypeItems = [
   {
     title: 'Hatha Yoga',
-    benefit: 'Builds strong foundation, flexibility, and body awareness.',
+    benefit: 'Builds strength and flexibility.',
     imageUrl:
       'https://images.pexels.com/photos/8436938/pexels-photo-8436938.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Adult practicing hatha yoga in a calm studio setting',
   },
   {
     title: 'Vinyasa Yoga',
-    benefit: 'Improves stamina, coordination, and energy flow.',
+    benefit: 'Improves flow, stamina, and energy.',
     imageUrl:
       'https://images.pexels.com/photos/4534688/pexels-photo-4534688.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Adult moving through a vinyasa yoga flow',
   },
   {
     title: 'Face Yoga',
-    benefit: 'Enhances natural glow and facial muscle tone.',
+    benefit: 'Supports tone and natural glow.',
     imageUrl:
       'https://images.pexels.com/photos/6633667/pexels-photo-6633667.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Person practicing face yoga with a self-care tool',
   },
   {
     title: 'Pregnancy Yoga',
-    benefit: 'Supports safe pregnancy and prepares for delivery.',
+    benefit: 'Supports comfort and confidence.',
     imageUrl:
       'https://images.pexels.com/photos/7055646/pexels-photo-7055646.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Pregnant woman practicing a gentle yoga pose indoors',
   },
   {
     title: 'Meditation',
-    benefit: 'Calms the mind and improves focus and clarity.',
+    benefit: 'Builds calm and focus.',
     imageUrl:
       'https://images.pexels.com/photos/29841240/pexels-photo-29841240.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Man meditating outdoors in nature',
   },
   {
     title: 'Kids Yoga',
-    benefit: 'Enhances concentration, flexibility, and discipline in children.',
+    benefit: 'Builds focus, flexibility, and discipline.',
     imageUrl:
       'https://images.pexels.com/photos/6288103/pexels-photo-6288103.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Family practicing yoga together at home',
   },
   {
     title: 'Pranayama',
-    benefit: 'Improves breathing capacity and reduces stress.',
+    benefit: 'Improves breath and lowers stress.',
     imageUrl:
       'https://images.pexels.com/photos/6648543/pexels-photo-6648543.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Man and woman practicing breathing exercises together',
   },
   {
     title: 'Therapeutic Yoga',
-    benefit: 'Helps manage specific health conditions naturally.',
+    benefit: 'Supports natural recovery.',
     imageUrl:
       'https://images.pexels.com/photos/4534600/pexels-photo-4534600.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Adult practicing a restorative therapeutic yoga pose',
   },
   {
     title: 'Yoga Nidra',
-    benefit: 'Deep relaxation for stress relief and better sleep.',
+    benefit: 'Promotes deep rest and better sleep.',
     imageUrl:
       'https://images.pexels.com/photos/7350283/pexels-photo-7350283.jpeg?auto=compress&cs=tinysrgb&w=900',
     imageAlt: 'Adult resting in a supported yoga nidra pose',
   },
 ];
 
-export const specialPrograms = [
+export const yogaTypes = withReviewMeta(yogaTypeItems, 'YOGA_TYPE', 'Yoga Type', 'yoga');
+
+const specialProgramItems = [
   {
     title: 'Postpartum Recovery',
-    duration: 'Starting from 1 week',
-    audience: 'New mothers rebuilding strength, pelvic stability, breath confidence, and calm.',
-    results: 'Visible recovery markers and guided progress tracking through regular assessments.',
+    duration: 'From 1 week',
+    audience: 'Recovery support for new mothers.',
+    results: 'Guided recovery with regular review.',
   },
   {
     title: 'Yoga for Stress Management',
-    duration: 'Starting from 1 week',
-    audience: 'Students, professionals, and caregivers managing overload, burnout, or emotional fatigue.',
-    results: 'Improved calmness, breath control, and weekly stress-reduction feedback.',
+    duration: 'From 1 week',
+    audience: 'For stress, burnout, and overload.',
+    results: 'Better calm, breath, and balance.',
   },
   {
     title: 'Yoga for Exam Focus',
-    duration: 'Starting from 1 week',
-    audience: 'Students who want better focus, confidence, routine, and emotional steadiness.',
-    results: 'Clear concentration support with regular check-ins and visible focus improvement.',
+    duration: 'From 1 week',
+    audience: 'For students who need better focus.',
+    results: 'Sharper focus with regular support.',
   },
   {
     title: 'Yoga for Weight Loss',
-    duration: 'Starting from 1 week',
-    audience: 'Men and women seeking mindful weight loss with movement, discipline, and food awareness.',
-    results: 'Tracked consistency, energy changes, and progress through regular assessments.',
+    duration: 'From 1 week',
+    audience: 'For mindful weight loss and routine.',
+    results: 'Progress tracked week by week.',
   },
 ];
 
-export const pricingPlans = [
+export const specialPrograms = withReviewMeta(specialProgramItems, 'SPECIAL_PROGRAM', 'Special Program', 'program');
+
+const pricingPlanItems = [
   {
     title: 'Beginner Plan',
     price: '30 Days - Rs. 1999',
     amount: 1999,
-    description: 'A gentle foundation with guided yoga, breathwork, and routine support for everyday consistency.',
-    cta: 'Pay with Razorpay',
+    description: 'A simple start with guided yoga and breathwork.',
+    cta: 'Pay Now',
   },
   {
     title: 'Intermediate Plan',
     price: '15 Days (2 Sessions / Day)',
     amount: null,
-    description: 'Two guided sessions each day for faster correction, discipline, and focused momentum.',
-    cta: 'Plan Consultation',
+    description: 'Two guided sessions each day for faster progress.',
+    cta: 'Talk to Us',
   },
   {
     title: 'Advanced Plan',
     price: 'Fully Personalized',
     amount: null,
-    description: 'Built around your health goals, timing, diet support needs, and long-term wellness plan.',
+    description: 'A personalized plan for your goals.',
     cta: 'Talk on WhatsApp',
   },
 ];
+
+export const pricingPlans = withReviewMeta(pricingPlanItems, 'PLAN', 'Membership Plan', 'plan');
 
 export const premiumPlan = {
   title: 'Premium Wellness Plan',
@@ -197,65 +225,68 @@ export const premiumPlan = {
     'Weekly Consultation',
     'Progress Tracking',
   ],
+  reviewItemId: 'plan-premium-wellness-plan',
+  reviewItemType: 'PLAN',
+  reviewItemTypeLabel: 'Membership Plan',
 };
 
 export const trialBenefits = [
-  'Free 1-Day Trial Available',
-  'Monthly participants receive a free weekend consultation',
-  'Yearly participants receive exciting rewards',
+  'Free 1-Day Trial',
+  'Free weekend consultation on monthly plans',
+  'Rewards on yearly plans',
 ];
 
 export const timingHighlights = [
-  'Flexible and personalized timing',
-  'Morning and evening slot support',
-  'Available all days, including Sundays',
+  'Flexible timing',
+  'Morning and evening slots',
+  'Sessions all week',
 ];
 
 export const whyChooseUs = [
   {
     title: 'Personalized Sessions',
-    description: 'This is not a general yoga class. Every session is shaped for your body, goals, and pace.',
+    description: 'Sessions matched to your body and goals.',
   },
   {
     title: 'BNYS-Based Approach',
-    description: 'Natural wellness thinking supports body, mind, and emotion together in one care path.',
+    description: 'Natural wellness for body and mind.',
   },
   {
     title: 'Flexible Timing',
-    description: 'Plans adapt around student schedules, work routines, family responsibilities, and recovery needs.',
+    description: 'Plans that fit study, work, and family life.',
   },
   {
     title: 'Progress Tracking',
-    description: 'Your growth is measured with weekly feedback, visible checkpoints, and goal-based review.',
+    description: 'Clear reviews and visible progress.',
   },
 ];
 
 export const progressFeatures = [
-  'Weekly progress assessment',
-  'Personalized feedback after review',
-  'Visible improvement tracking',
-  'Goal-based evaluation so growth is measured, not guessed',
+  'Weekly review',
+  'Personal feedback',
+  'Visible progress',
+  'Goal-based tracking',
 ];
 
 export const whatsappCommunityFeatures = [
-  'Daily reminders for consistency',
-  'Motivation and support between sessions',
-  'Direct communication for doubts and follow-up',
-  'Wellness tips and updates to stay on track',
+  'Daily reminders',
+  'Ongoing support',
+  'Direct support',
+  'Simple wellness tips',
 ];
 
 export const testimonials = [
   {
     name: 'Ananya R.',
-    quote: 'I joined for stress relief and ended up building a routine that felt personal, gentle, and sustainable.',
+    quote: 'I found a routine that felt calm, personal, and sustainable.',
   },
   {
     name: 'Rahul M.',
-    quote: 'The weekly follow-up and breathing work made a big difference in my focus and recovery from work stress.',
+    quote: 'The weekly follow-up improved my focus and recovery.',
   },
   {
     name: 'Divya K.',
-    quote: 'The Premium plan felt complete because yoga, food guidance, and progress tracking were all connected.',
+    quote: 'The Premium plan connected yoga, food, and progress clearly.',
   },
 ];
 
@@ -263,21 +294,21 @@ export const guideCollections = {
   free: [
     {
       title: 'Morning Reset Guide',
-      description: 'A simple daily reset with stretching, hydration, breathwork, and calm morning structure.',
+      description: 'A simple routine for movement, hydration, and breath.',
       format: 'Free PDF',
       actionLabel: 'Download PDF',
       actionHref: '/guides/morning-reset-guide.pdf',
     },
     {
       title: 'Stress Relief Breathing Guide',
-      description: 'Beginner-friendly pranayama and relaxation steps for busy days and emotional overload.',
+      description: 'Easy breathing steps for busy or stressful days.',
       format: 'Free PDF',
       actionLabel: 'Download PDF',
       actionHref: '/guides/stress-relief-breathing-guide.pdf',
     },
     {
       title: 'Beginner Yoga Tracker',
-      description: 'A printable tracker to build steady habits, reflect weekly, and stay accountable.',
+      description: 'A printable tracker for daily practice.',
       format: 'Free PDF',
       actionLabel: 'Download PDF',
       actionHref: '/guides/beginner-yoga-tracker.pdf',
@@ -286,7 +317,7 @@ export const guideCollections = {
   premium: [
     {
       title: '7-Day Wellness Reset E-Book',
-      description: 'A structured reset covering movement, food rhythm, journaling, and recovery habits.',
+      description: 'A reset for movement, food, and recovery.',
       format: 'Paid E-Book',
       price: 'Rs. 299',
       previewHref: '/guides/7-day-wellness-reset-preview.pdf',
@@ -294,7 +325,7 @@ export const guideCollections = {
     },
     {
       title: "Women's Balance Companion",
-      description: 'A deeper guide for calm cycles, energy balance, and supportive self-care routines.',
+      description: 'A guide for calmer cycles and steady energy.',
       format: 'Paid E-Book',
       price: 'Rs. 349',
       previewHref: '/guides/womens-balance-companion-preview.pdf',
@@ -302,7 +333,7 @@ export const guideCollections = {
     },
     {
       title: 'Exam Focus Routine Planner',
-      description: 'A structured study-and-wellness planner for memory, energy, and emotional steadiness.',
+      description: 'A planner for focus, energy, and steady study.',
       format: 'Paid E-Book',
       price: 'Rs. 249',
       previewHref: '/guides/exam-focus-routine-planner-preview.pdf',
@@ -317,7 +348,7 @@ export const contactDetails = {
   whatsappNumber: '917904049837',
   whatsappLink:
     'https://wa.me/917904049837?text=Hi%20I%20want%20to%20join%20Jeevanam%20360',
-  tagline: 'Complete Wellness. Not Just Yoga.',
+  tagline: brandDetails.supportLine,
 };
 
 export const socialLinks = [
@@ -380,3 +411,4 @@ export function buildContactPlanHref(plan) {
 
   return `/contact?${params.toString()}`;
 }
+

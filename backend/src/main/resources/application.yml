@@ -34,6 +34,9 @@ app:
     brand-name: ${MAIL_BRAND_NAME:Jeevanam 360}
     from-address: ${MAIL_FROM:}
     contact-recipient: ${CONTACT_RECEIVER_EMAIL:srinithisrinithi09@gmail.com}
+  auth:
+    jwt-secret: ${JWT_SECRET:jeevanam360-please-change-this-secret-for-production-2026}
+    token-expiration-hours: ${JWT_EXPIRATION_HOURS:72}
 
 razorpay:
   key-id: ${RAZORPAY_KEY_ID:}

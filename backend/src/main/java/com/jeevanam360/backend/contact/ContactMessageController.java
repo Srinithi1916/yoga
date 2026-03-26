@@ -1,14 +1,15 @@
 package com.jeevanam360.backend.contact;
 
+import com.jeevanam360.backend.security.AuthenticatedUser;
+import jakarta.validation.Valid;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/contact-messages")
@@ -21,8 +22,12 @@ public class ContactMessageController {
     }
 
     @PostMapping
-    public ResponseEntity<ContactMessageResponse> create(@Valid @RequestBody ContactMessageRequest request) {
-        ContactMessage message = contactMessageService.prepare(request);
+    public ResponseEntity<ContactMessageResponse> create(
+        @Valid @RequestBody ContactMessageRequest request,
+        Authentication authentication
+    ) {
+        AuthenticatedUser currentUser = (AuthenticatedUser) authentication.getPrincipal();
+        ContactMessage message = contactMessageService.prepare(request, currentUser);
         boolean stored = false;
         String storageStatus = "MongoDB is not connected, so the enquiry was not saved to the database.";
 

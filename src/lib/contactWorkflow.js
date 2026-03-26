@@ -1,16 +1,15 @@
-import { buildWhatsappUrl } from '../data/siteData';
+import { buildWhatsappUrl, brandDetails } from '../data/siteData';
+import { apiRequest } from './api';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_8eusket';
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_a3wn0ko';
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'Lq-b9zkDDo2as94ms';
 const CONTACT_EMAIL = 'srinithisrinithi09@gmail.com';
-const BRAND_NAME = 'Jeevanam 360';
 
 function sanitizePayload(payload) {
   return {
     name: payload.name.trim(),
-    email: payload.email.trim(),
+    email: payload.email.trim().toLowerCase(),
     whatsapp: payload.whatsapp.trim(),
     selectedPlan: (payload.selectedPlan || '').trim(),
     planPrice: (payload.planPrice || '').trim(),
@@ -32,8 +31,8 @@ function buildEmailTemplateParams(payload) {
   const clean = sanitizePayload(payload);
 
   return {
-    brand_name: BRAND_NAME,
-    to_name: BRAND_NAME,
+    brand_name: brandDetails.name,
+    to_name: brandDetails.name,
     to_email: CONTACT_EMAIL,
     from_name: clean.name,
     from_email: clean.email,
@@ -95,35 +94,34 @@ export async function sendContactEmail(payload) {
   return { success: true };
 }
 
-export async function submitContactMessage(payload) {
-  const response = await fetch(`${API_BASE_URL}/contact-messages`, {
+export function submitContactMessage(payload, token) {
+  const clean = sanitizePayload(payload);
+
+  return apiRequest('/contact-messages', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+    token,
+    body: {
+      whatsapp: clean.whatsapp,
+      selectedPlan: clean.selectedPlan,
+      planPrice: clean.planPrice,
+      amount: clean.amount,
+      message: clean.message,
+      source: clean.source,
     },
-    body: JSON.stringify(sanitizePayload(payload)),
   });
-
-  if (!response.ok) {
-    throw new Error('Could not save the contact message.');
-  }
-
-  return response.json();
 }
 
-export async function submitPaymentRequest(payload) {
+export function submitPaymentRequest(payload, token) {
   const clean = sanitizePayload(payload);
 
   if (!clean.selectedPlan) {
-    return null;
+    return Promise.resolve(null);
   }
 
-  const response = await fetch(`${API_BASE_URL}/payment-requests`, {
+  return apiRequest('/payment-requests', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
+    token,
+    body: {
       name: clean.name,
       email: clean.email,
       whatsapp: clean.whatsapp,
@@ -132,12 +130,6 @@ export async function submitPaymentRequest(payload) {
       amount: clean.amount,
       currency: 'INR',
       note: clean.message,
-    }),
+    },
   });
-
-  if (!response.ok) {
-    throw new Error('Could not create the payment request.');
-  }
-
-  return response.json();
 }

@@ -9,9 +9,20 @@ Premium wellness website built with a React + Vite frontend and a Spring Boot + 
 - Tailwind CSS
 - Framer Motion
 - Spring Boot
+- Spring Security + JWT
 - MongoDB Atlas
 - Razorpay
-- Gmail SMTP
+- EmailJS
+
+## Core Features
+
+- Member signup and login stored in MongoDB
+- JWT-protected contact flow
+- Store-style reviews for yoga types, special programs, and pricing plans
+- Only logged-in members can contact the team or post reviews
+- Review details stored in MongoDB
+- Contact enquiries stored in MongoDB
+- Razorpay checkout for fixed-price plans
 
 ## Local Run
 
@@ -56,20 +67,18 @@ Required backend environment variables:
 - `MONGODB_URI`
 - `CORS_ALLOWED_ORIGINS`
   Example: `http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app`
-- `MAIL_HOST`
-- `MAIL_PORT`
-- `MAIL_USERNAME`
-- `MAIL_PASSWORD`
-- `MAIL_FROM`
-- `CONTACT_RECEIVER_EMAIL`
-- `MAIL_SMTP_AUTH`
-- `MAIL_SMTP_STARTTLS_ENABLE`
-- `MAIL_BRAND_NAME`
+- `JWT_SECRET`
+- `JWT_EXPIRATION_HOURS`
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
+
+Frontend contact email is currently sent through EmailJS, so those frontend env vars must also be present on Netlify:
+
+- `VITE_EMAILJS_SERVICE_ID`
+- `VITE_EMAILJS_TEMPLATE_ID`
+- `VITE_EMAILJS_PUBLIC_KEY`
 
 ## Live URLs
 
 - Frontend: `https://jeevanam360a.netlify.app/`
 - Backend: `https://yoga-2-i5oy.onrender.com`
-

@@ -4,8 +4,15 @@ Spring Boot + MongoDB backend for the Jeevanam 360 website.
 
 ## What it handles
 
-- `POST /api/contact-messages` to save contact enquiries and send a private backend email notification
+- `POST /api/auth/signup` to create a member account in MongoDB
+- `POST /api/auth/login` to log in and receive a JWT token
+- `GET /api/auth/me` to read the signed-in member profile
+- `POST /api/contact-messages` to save member contact enquiries in MongoDB
 - `POST /api/payment-requests` to save plan/payment intent requests
+- `GET /api/reviews/summaries` to load public review summaries
+- `GET /api/reviews/items/{itemId}` to load reviews for a yoga type, program, or plan
+- `POST /api/reviews/items/{itemId}` for logged-in members to create or update their review
+- `DELETE /api/reviews/items/{itemId}/mine` for logged-in members to delete their review
 - `POST /api/payments/razorpay/order` to create a Razorpay order for fixed-price plans
 - `POST /api/payments/razorpay/verify` to verify the Razorpay payment signature
 - `GET /api/health` to verify the backend is running
@@ -18,21 +25,24 @@ Set these values before running:
 $env:MONGODB_URI="mongodb://localhost:27017/jeevanam360"
 $env:CORS_ALLOWED_ORIGINS="http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app"
 $env:SERVER_PORT="8080"
-
-$env:MAIL_HOST="smtp.gmail.com"
-$env:MAIL_PORT="587"
-$env:MAIL_USERNAME="your-email@gmail.com"
-$env:MAIL_PASSWORD="your-app-password"
-$env:MAIL_FROM="your-email@gmail.com"
-$env:CONTACT_RECEIVER_EMAIL="srinithisrinithi09@gmail.com"
-$env:MAIL_SMTP_AUTH="true"
-$env:MAIL_SMTP_STARTTLS_ENABLE="true"
-$env:MAIL_BRAND_NAME="Jeevanam 360"
+$env:JWT_SECRET="change-this-jwt-secret-for-production"
+$env:JWT_EXPIRATION_HOURS="72"
 
 $env:RAZORPAY_KEY_ID="rzp_test_xxxxx"
 $env:RAZORPAY_KEY_SECRET="your_secret_here"
 ```
 
+Note:
+
+- Contact email is currently sent from the frontend through EmailJS.
+- SMTP mail settings are optional unless you decide to move email sending back to the backend later.
+
+
+If your local machine has trouble with `mongodb+srv` DNS lookups, use the direct Atlas host format instead of the SRV URI. Example:
+
+```powershell
+$env:MONGODB_URI="mongodb://USERNAME:PASSWORD@ac-xxxxx-shard-00-00.example.mongodb.net:27017,ac-xxxxx-shard-00-01.example.mongodb.net:27017,ac-xxxxx-shard-00-02.example.mongodb.net:27017/jeevanam360?ssl=true&authSource=admin&replicaSet=atlas-xxxxxx-shard-0&retryWrites=true&w=majority&appName=Cluster0"
+```
 ## Run locally
 
 ```powershell
@@ -85,9 +95,8 @@ For Render:
 
 ## Notes
 
-- Contact data and payment request data are stored in MongoDB.
-- Contact email is sent privately from the backend through SMTP.
+- User accounts, contact data, payment request data, and review data are stored in MongoDB.
+- Only logged-in members can contact the team or submit reviews.
 - Fixed-price plans in the frontend use Razorpay checkout.
 - WhatsApp still opens from the frontend after contact form submission.
-- For Gmail SMTP, use an app password instead of your normal account password.
 

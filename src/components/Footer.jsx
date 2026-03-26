@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
-import { contactDetails, navigationLinks, socialLinks } from '../data/siteData';
+import { useAuth } from '../context/AuthContext';
+import { brandDetails, contactDetails, navigationLinks, socialLinks } from '../data/siteData';
 import { BlossomSpray, LotusBloom } from './Decorations';
-import { BrandMark } from './Illustrations';
+import { BrandLogo } from './BrandLogo';
 
 export default function Footer() {
+  const { isAuthenticated, logout, user } = useAuth();
+
   return (
     <footer className="px-4 pb-8 pt-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -14,17 +17,12 @@ export default function Footer() {
           <LotusBloom className="absolute bottom-0 right-20 hidden h-20 w-32 opacity-60 md:block" />
           <div className="grid gap-8 lg:grid-cols-[1.15fr_0.9fr_1fr_auto] lg:items-center">
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-rose-900">
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/70 shadow-glass">
-                  <BrandMark className="h-10 w-10" />
-                </span>
-                <div>
-                  <p className="font-display text-[2.1rem] leading-none">Jeevanam 360</p>
-                  <p className="text-sm font-semibold text-rose-900/70">{contactDetails.tagline}</p>
-                </div>
-              </div>
-              <p className="max-w-md text-sm leading-7 text-rose-900/75">
-                Personalized yoga, nutrition guidance, progress tracking, and supportive care for men and women building a better routine.
+              <BrandLogo markClassName="h-12 w-12" />
+              <p className="text-sm font-bold uppercase tracking-[0.28em] text-rose-700/75">
+                {brandDetails.supportLine}
+              </p>
+              <p className="font-display text-4xl leading-none text-rose-900/92">
+                {brandDetails.promise}
               </p>
             </div>
 
@@ -48,6 +46,11 @@ export default function Footer() {
               <p>
                 <span className="font-semibold">Phone:</span> {contactDetails.phone}
               </p>
+              {isAuthenticated ? (
+                <p>
+                  <span className="font-semibold">Signed In:</span> {user?.name}
+                </p>
+              ) : null}
               <div className="flex flex-wrap gap-2 pt-1">
                 {socialLinks.map((item) =>
                   item.external ? (
@@ -64,17 +67,25 @@ export default function Footer() {
             </div>
 
             <div className="flex flex-col gap-3">
-              <Link to="/contact" className="btn-secondary whitespace-nowrap justify-center">
-                Start Free Trial
-              </Link>
-              <a
-                href={contactDetails.whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary whitespace-nowrap justify-center"
-              >
-                Chat on WhatsApp
-              </a>
+              {isAuthenticated ? (
+                <>
+                  <Link to="/contact" className="btn-secondary whitespace-nowrap justify-center">
+                    Contact
+                  </Link>
+                  <button type="button" onClick={logout} className="btn-primary whitespace-nowrap justify-center">
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/auth?mode=signup" className="btn-secondary whitespace-nowrap justify-center">
+                    Sign Up
+                  </Link>
+                  <Link to="/auth?mode=login" className="btn-primary whitespace-nowrap justify-center">
+                    Log In
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

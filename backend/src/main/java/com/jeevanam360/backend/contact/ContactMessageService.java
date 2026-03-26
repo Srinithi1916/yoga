@@ -2,6 +2,7 @@ package com.jeevanam360.backend.contact;
 
 import java.time.Instant;
 
+import com.jeevanam360.backend.security.AuthenticatedUser;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,10 +14,11 @@ public class ContactMessageService {
         this.contactMessageRepository = contactMessageRepository;
     }
 
-    public ContactMessage prepare(ContactMessageRequest request) {
+    public ContactMessage prepare(ContactMessageRequest request, AuthenticatedUser user) {
         ContactMessage message = new ContactMessage();
-        message.setName(request.name().trim());
-        message.setEmail(request.email().trim());
+        message.setUserId(user.id());
+        message.setName(user.name());
+        message.setEmail(user.email());
         message.setWhatsapp(request.whatsapp().trim());
         message.setSelectedPlan(trimToNull(request.selectedPlan()));
         message.setPlanPrice(trimToNull(request.planPrice()));

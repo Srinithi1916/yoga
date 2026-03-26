@@ -3,6 +3,7 @@ package com.jeevanam360.backend.payment;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import com.jeevanam360.backend.security.AuthenticatedUser;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,10 +15,11 @@ public class PaymentRequestService {
         this.paymentRequestRepository = paymentRequestRepository;
     }
 
-    public PaymentRequestRecord create(PaymentRequestPayload payload) {
+    public PaymentRequestRecord create(PaymentRequestPayload payload, AuthenticatedUser user) {
         PaymentRequestRecord paymentRequest = new PaymentRequestRecord();
-        paymentRequest.setName(payload.name().trim());
-        paymentRequest.setEmail(payload.email().trim());
+        paymentRequest.setUserId(user != null ? user.id() : null);
+        paymentRequest.setName(resolveName(payload.name(), user));
+        paymentRequest.setEmail(resolveEmail(payload.email(), user));
         paymentRequest.setWhatsapp(payload.whatsapp().trim());
         paymentRequest.setSelectedPlan(payload.selectedPlan().trim());
         paymentRequest.setPlanPrice(trimToNull(payload.planPrice()));
@@ -65,6 +67,22 @@ public class PaymentRequestService {
     private String resolveCurrency(String currency) {
         String normalized = trimToNull(currency);
         return normalized == null ? "INR" : normalized;
+    }
+
+    private String resolveName(String payloadName, AuthenticatedUser user) {
+        String normalized = trimToNull(payloadName);
+        if (user != null) {
+            return user.name();
+        }
+        return normalized;
+    }
+
+    private String resolveEmail(String payloadEmail, AuthenticatedUser user) {
+        String normalized = trimToNull(payloadEmail);
+        if (user != null) {
+            return user.email();
+        }
+        return normalized;
     }
 
     private String trimToNull(String value) {

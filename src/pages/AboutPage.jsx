@@ -38,16 +38,13 @@ export default function AboutPage() {
                 align="left"
                 eyebrow="About"
                 title="What is Jeevanam 360?"
-                description="Jeevanam 360 combines yoga, diet awareness, progress tracking, and personalized care in one calm, guided wellness experience."
+                description="Yoga, guidance, and lifestyle support in one place."
               />
               <p className="section-copy max-w-2xl">
-                The mission is simple: offer the right yoga for the right person at the right time.
-                Instead of one fixed routine for everyone, each plan responds to your body, your
-                health goals, your emotional state, and your daily schedule.
+                The right practice, at the right time, for the right person.
               </p>
               <p className="rounded-[1.75rem] bg-white/55 px-5 py-5 text-base font-semibold leading-8 text-rose-950/88 shadow-glass">
-                Jeevanam 360 is designed to feel human, not textbook. It is warm, practical, and
-                personal, whether you are coming for recovery, focus, strength, calmness, or better routine.
+                Simple, personal, and practical care for recovery, focus, strength, and balance.
               </p>
               <Link to="/contact" className="btn-primary inline-flex">
                 Start Free Trial
@@ -62,15 +59,13 @@ export default function AboutPage() {
         <GlassPanel className="rounded-[2.25rem] p-8 shadow-bloom">
           <h2 className="font-display text-4xl font-semibold text-rose-950">Our Mission</h2>
           <p className="mt-4 text-base font-medium leading-8 text-rose-900/80">
-            To help people improve daily life through intentional wellness. Every session is meant to
-            feel calming, personalized, supportive, and realistic enough to continue beyond the first week.
+            Help people feel better through calm, consistent wellness.
           </p>
         </GlassPanel>
         <GlassPanel className="rounded-[2.25rem] p-8 shadow-bloom">
           <h2 className="font-display text-4xl font-semibold text-rose-950">Our Approach</h2>
           <p className="mt-4 text-base font-medium leading-8 text-rose-900/80">
-            Jeevanam 360 works through the full picture: body, mind, and emotion. Yoga postures,
-            breathwork, food awareness, routine correction, and feedback move together inside one path.
+            We combine yoga, breath, routine support, and feedback.
           </p>
         </GlassPanel>
       </div>
@@ -79,7 +74,7 @@ export default function AboutPage() {
         <SectionHeading
           eyebrow="Three Pillars"
           title="A Human-Centered Method"
-          description="The practice stays grounded, calm, and practical so wellness can fit naturally into real life."
+          description="A calm, practical method for daily life."
         />
         <div className="grid gap-5 md:grid-cols-3">
           {pillars.map((pillar, index) => (
@@ -105,7 +100,7 @@ export default function AboutPage() {
             align="left"
             eyebrow="Who It Helps"
             title="Who Jeevanam 360 Is For"
-            description="The method is flexible enough to support different ages, schedules, and wellness goals."
+            description="Flexible support for different goals and schedules."
           />
           <div className="mt-6 space-y-3">
             {audienceGroups.map((item) => (
@@ -126,17 +121,15 @@ export default function AboutPage() {
                 align="left"
                 eyebrow="BNYS"
                 title="BNYS-Based Guidance"
-                description="The Jeevanam 360 method is shaped by a BNYS-based wellness approach, keeping natural healing and lifestyle correction at the center of care."
+                description="Natural healing and lifestyle care guide the method."
               />
             </div>
             <div className="space-y-4 text-sm font-medium leading-8 text-rose-900/82">
               <p>
-                Sessions are not only about poses. They are designed with awareness of rest,
-                digestion, breath, stress, routine, and long-term balance.
+                Sessions consider rest, breath, food, stress, and routine.
               </p>
               <p>
-                The result is a supportive experience that feels trustworthy and personal rather
-                than clinical, rigid, or generic.
+                Care stays personal, simple, and trustworthy.
               </p>
               <Link to="/contact" className="btn-primary mt-2 inline-flex">
                 Start Free Trial

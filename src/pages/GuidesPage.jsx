@@ -61,11 +61,10 @@ export default function GuidesPage() {
                 align="left"
                 eyebrow="Guides"
                 title="Free PDFs + Paid E-Books"
-                description="Helpful resources that make Jeevanam 360 feel like a full wellness brand, not just a class schedule."
+                description="Free PDFs and premium e-books for practice at home."
               />
               <p className="section-copy max-w-2xl">
-                These resources support people between sessions with guided routines, trackers,
-                breathing support, and structured premium e-books for deeper practice.
+                Simple resources for routines, breathwork, and tracking.
               </p>
               <Link to="/contact" className="btn-primary inline-flex">
                 Start Free Trial
@@ -86,7 +85,7 @@ export default function GuidesPage() {
         <SectionHeading
           eyebrow="Free"
           title="Complimentary Wellness PDFs"
-          description="Simple, practical downloads for people who want to start gently and build trust in the process."
+          description="Simple downloads to help you start."
         />
         <GuideGrid items={guideCollections.free} />
       </div>
@@ -95,7 +94,7 @@ export default function GuidesPage() {
         <SectionHeading
           eyebrow="Premium"
           title="Paid E-Books"
-          description="More complete resources with structure, routine planning, and premium brand-level polish."
+          description="Deeper guides with more structure."
         />
         <GuideGrid items={guideCollections.premium} isPremium />
       </div>
@@ -104,16 +103,15 @@ export default function GuidesPage() {
         <ImageSlideshow slides={communitySlides} imageClassName="h-[360px] sm:h-[420px]" />
         <GlassPanel className="rounded-[2.5rem] px-6 py-10 shadow-bloom sm:px-10">
           <div className="space-y-4">
-            <h2 className="font-display text-5xl text-rose-950">Why Guides Matter</h2>
+            <h2 className="font-display text-5xl text-rose-950">Why Guides Help</h2>
             <p className="text-base leading-8 text-rose-900/82">
-              Guides extend the Jeevanam 360 experience beyond live sessions. They add extra value
-              for free trial users, support daily consistency at home, and strengthen trust in the brand.
+              Guides support consistency between sessions and add value at home.
             </p>
             <div className="space-y-3 pt-2">
               {[
-                'Create extra value for free trial users',
-                'Support daily consistency at home',
-                'Strengthen trust in your premium brand positioning',
+                'Extra value for trial users',
+                'Support daily consistency',
+                'Build trust in the brand',
               ].map((item) => (
                 <div key={item} className="rounded-2xl bg-white/55 px-5 py-4 text-sm leading-7 text-rose-900/82">
                   {item}
