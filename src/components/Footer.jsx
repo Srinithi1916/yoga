@@ -17,7 +17,7 @@ export default function Footer() {
           <LotusBloom className="absolute bottom-0 right-20 hidden h-20 w-32 opacity-60 md:block" />
           <div className="grid gap-8 lg:grid-cols-[1.15fr_0.9fr_1fr_auto] lg:items-center">
             <div className="space-y-3">
-              <BrandLogo markClassName="h-12 w-12" />
+              <BrandLogo markClassName="h-14 w-14 sm:h-16 sm:w-16" />
               <p className="text-sm font-bold uppercase tracking-[0.28em] text-rose-700/75">
                 {brandDetails.supportLine}
               </p>

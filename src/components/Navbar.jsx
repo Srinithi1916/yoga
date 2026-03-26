@@ -26,7 +26,7 @@ export default function Navbar() {
         <div className="glass-card rounded-[2rem] px-4 py-3 shadow-bloom md:rounded-full">
           <div className="flex items-center justify-between gap-4">
             <Link to="/" className="min-w-0 text-rose-900">
-              <BrandLogo className="min-w-0" markClassName="h-12 w-12 sm:h-14 sm:w-14" />
+              <BrandLogo className="min-w-0" markClassName="h-14 w-14 sm:h-16 sm:w-16" />
             </Link>
 
             <nav className="hidden items-center gap-2 md:flex">

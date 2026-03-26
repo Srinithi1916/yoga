@@ -1,11 +1,23 @@
-export function BrandLogo({ className = '', showWordmark = true, markClassName = 'h-14 w-14' }) {
+export function BrandLogo({
+  className = '',
+  showWordmark = true,
+  markClassName = 'h-14 w-14',
+  markWrapClassName = '',
+  imageClassName = '',
+}) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <img
-        src="/brand-logo-teal.svg"
-        alt="Jeevanam 360 logo"
-        className={`${markClassName} shrink-0 object-contain`}
-      />
+      <span className={`${markClassName} flex shrink-0 items-center justify-center ${markWrapClassName}`.trim()}>
+        <img
+          src="/jeevanam-360-logo.png"
+          alt="Jeevanam 360 logo"
+          width="531"
+          height="491"
+          loading="eager"
+          decoding="async"
+          className={`block h-full w-full object-contain object-center ${imageClassName}`.trim()}
+        />
+      </span>
 
       {showWordmark ? (
         <div className="min-w-0">

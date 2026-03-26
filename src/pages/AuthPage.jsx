@@ -88,7 +88,7 @@ function AuthCopyPanel({ block, className }) {
   return (
     <section className={`auth-split-copy ${className}`}>
       <div className="auth-split-copy-brand">
-        <BrandLogo showWordmark={false} markClassName="h-14 w-14 sm:h-16 sm:w-16" />
+        <BrandLogo showWordmark={false} markClassName="h-20 w-20 sm:h-24 sm:w-24" markWrapClassName="rounded-[1.75rem] border border-white/20 bg-white/18 p-2.5 shadow-[0_20px_48px_-30px_rgba(255,255,255,0.95)] backdrop-blur-sm" imageClassName="mix-blend-multiply saturate-[1.08] contrast-[1.03]" />
         <div>
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.34em] text-white/75 sm:text-[0.72rem]">
             Jeevanam 360
