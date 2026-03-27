@@ -2,6 +2,8 @@ package com.jeevanam360.backend.payment;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +19,8 @@ public class PaymentRequestRecord {
     private String whatsapp;
     private String selectedPlan;
     private String planPrice;
+    private String paymentMethod;
+    private String transactionReference;
     private BigDecimal amount;
     private String currency;
     private String status;
@@ -25,8 +29,11 @@ public class PaymentRequestRecord {
     private String gatewayPaymentId;
     private String gatewaySignature;
     private String note;
+    private String reviewedBy;
     private Instant createdAt;
+    private Instant reviewedAt;
     private Instant verifiedAt;
+    private List<String> sentReminderCodes = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -82,6 +89,22 @@ public class PaymentRequestRecord {
 
     public void setPlanPrice(String planPrice) {
         this.planPrice = planPrice;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getTransactionReference() {
+        return transactionReference;
+    }
+
+    public void setTransactionReference(String transactionReference) {
+        this.transactionReference = transactionReference;
     }
 
     public BigDecimal getAmount() {
@@ -148,6 +171,14 @@ public class PaymentRequestRecord {
         this.note = note;
     }
 
+    public String getReviewedBy() {
+        return reviewedBy;
+    }
+
+    public void setReviewedBy(String reviewedBy) {
+        this.reviewedBy = reviewedBy;
+    }
+
     public Instant getCreatedAt() {
         return createdAt;
     }
@@ -156,11 +187,27 @@ public class PaymentRequestRecord {
         this.createdAt = createdAt;
     }
 
+    public Instant getReviewedAt() {
+        return reviewedAt;
+    }
+
+    public void setReviewedAt(Instant reviewedAt) {
+        this.reviewedAt = reviewedAt;
+    }
+
     public Instant getVerifiedAt() {
         return verifiedAt;
     }
 
     public void setVerifiedAt(Instant verifiedAt) {
         this.verifiedAt = verifiedAt;
+    }
+
+    public List<String> getSentReminderCodes() {
+        return sentReminderCodes;
+    }
+
+    public void setSentReminderCodes(List<String> sentReminderCodes) {
+        this.sentReminderCodes = sentReminderCodes;
     }
 }

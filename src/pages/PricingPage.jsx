@@ -1,187 +1,161 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
 import ReviewSection from '../components/ReviewSection';
 import SectionHeading from '../components/SectionHeading';
-import { useAuth } from '../context/AuthContext';
-import { buildContactPlanHref, premiumPlan, pricingPlans, timingHighlights, trialBenefits } from '../data/siteData';
-import { startRazorpayCheckout } from '../lib/razorpay';
+import { buildContactPlanHref, buildWhatsappUrl, premiumPlan, pricingPlans } from '../data/siteData';
+import { getPlanVisual, getServiceTags } from '../lib/planVisuals';
 
-const pricingReviewItems = [...pricingPlans, premiumPlan].map((item) => ({
+const allPlans = [...pricingPlans, premiumPlan];
+
+const pricingReviewItems = allPlans.map((item) => ({
   title: item.title,
   reviewItemId: item.reviewItemId,
   reviewItemType: item.reviewItemType,
   reviewItemTypeLabel: item.reviewItemTypeLabel,
 }));
 
-function PaymentStatus({ status }) {
-  if (status.type === 'idle') {
-    return null;
-  }
+function buildPlanWhatsappMessage(plan) {
+  return `Hi, I want to join the ${plan.title}. Please guide me on the next step.`;
+}
 
-  const palette =
-    status.type === 'success'
-      ? 'border-emerald-200/70 bg-emerald-50/70 text-emerald-900'
-      : status.type === 'error'
-        ? 'border-rose-200/70 bg-rose-50/70 text-rose-900'
-        : 'border-white/60 bg-white/60 text-rose-900';
+function PlanSelectorButton({ plan, isActive, onSelect }) {
+  const visual = getPlanVisual(plan.planKey);
+  const serviceTags = getServiceTags(plan.features).slice(0, 3);
 
   return (
-    <div className={`mt-6 rounded-[1.75rem] border px-5 py-4 text-sm leading-7 shadow-glass ${palette}`}>
-      {status.message}
-    </div>
+    <motion.button
+      type="button"
+      whileHover={{ y: -4, scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={onSelect}
+      className={[
+        'rounded-[2rem] border bg-white/72 p-5 text-left shadow-glass transition duration-300',
+        isActive ? `${visual.borderClass} ring-2 ring-white/80 shadow-[0_26px_55px_-28px_rgba(15,23,42,0.36)]` : 'border-white/55 hover:border-white/80',
+      ].join(' ')}
+    >
+      <span className={`inline-flex rounded-full bg-gradient-to-r ${visual.gradientClass} px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-white`}>
+        {visual.typeLabel}
+      </span>
+      <div className="mt-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 className="font-display text-3xl text-rose-950">{plan.title}</h2>
+          <p className={`mt-2 text-sm font-semibold ${visual.mutedClass}`}>{plan.price}</p>
+        </div>
+        {isActive ? <span className="rounded-full bg-rose-950 px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white">Selected</span> : null}
+      </div>
+      <p className="mt-3 text-sm leading-7 text-rose-900/76">{plan.description}</p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {serviceTags.map((tag) => (
+          <span key={tag.key} className={`rounded-full px-3 py-1 text-xs font-semibold ${tag.className}`}>
+            {tag.label}
+          </span>
+        ))}
+      </div>
+    </motion.button>
   );
 }
 
 export default function PricingPage() {
-  const [paymentStatus, setPaymentStatus] = useState({ type: 'idle', message: '' });
-  const { user } = useAuth();
+  const [selectedPlanKey, setSelectedPlanKey] = useState(allPlans[0].planKey);
 
-  async function handleCheckout(plan) {
-    try {
-      await startRazorpayCheckout({
-        plan,
-        customer: user
-          ? {
-              name: user.name,
-              email: user.email,
-              whatsapp: user.phone,
-            }
-          : {},
-        onStatusChange: (type, message) => setPaymentStatus({ type, message }),
-      });
-    } catch (error) {
-      setPaymentStatus({
-        type: 'error',
-        message: error.message || 'Online payment is unavailable. Please contact us on WhatsApp.',
-      });
-    }
-  }
+  const selectedPlan = useMemo(
+    () => allPlans.find((plan) => plan.planKey === selectedPlanKey) || allPlans[0],
+    [selectedPlanKey],
+  );
+
+  const selectedVisual = getPlanVisual(selectedPlan.planKey);
+  const selectedServiceTags = getServiceTags(selectedPlan.features);
+  const contactHref = buildContactPlanHref(selectedPlan);
+  const whatsappHref = buildWhatsappUrl(buildPlanWhatsappMessage(selectedPlan));
 
   return (
     <div className="space-y-8 px-4 pb-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <GlassPanel className="rounded-[2.75rem] px-6 py-10 shadow-bloom sm:px-10 lg:px-12 lg:py-14">
-          <div className="flex flex-col items-center gap-6 text-center">
+          <div className="flex flex-col gap-8">
             <SectionHeading
               eyebrow="Pricing"
-              title="Plans for Every Stage"
-              description="Choose a plan that fits your pace."
+              title="Choose Your Service"
+              description="Select a plan by color, review the details, and continue by WhatsApp or plan selection."
             />
-            <Link to="/contact" className="btn-primary">
-              Start Free Trial
-            </Link>
+
+            <div className="grid gap-4 lg:grid-cols-4">
+              {allPlans.map((plan) => (
+                <PlanSelectorButton
+                  key={plan.planKey}
+                  plan={plan}
+                  isActive={selectedPlan.planKey === plan.planKey}
+                  onSelect={() => setSelectedPlanKey(plan.planKey)}
+                />
+              ))}
+            </div>
           </div>
         </GlassPanel>
       </div>
 
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-5 xl:grid-cols-[repeat(3,minmax(0,1fr))_1.05fr]">
-          {pricingPlans.map((plan, index) => (
-            <motion.article
-              key={plan.title}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: index * 0.08 }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="glass-card rounded-[2rem] p-7 shadow-bloom"
-            >
-              <h3 className="font-display text-4xl font-semibold text-rose-950">{plan.title}</h3>
-              <p className="mt-5 text-2xl font-bold text-rose-800">{plan.price}</p>
-              <p className="mt-4 text-base font-medium leading-8 text-rose-900/82">{plan.description}</p>
-              {plan.amount ? (
-                <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-                  Payment support on WhatsApp
+        <motion.div
+          key={selectedPlan.planKey}
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+        >
+          <GlassPanel className={`rounded-[2.5rem] border ${selectedVisual.borderClass} bg-gradient-to-br ${selectedVisual.surfaceClass} p-6 shadow-bloom sm:p-8`}>
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl">
+                <span className={`inline-flex rounded-full px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] ${selectedVisual.badgeClass}`}>
+                  {selectedVisual.typeLabel}
+                </span>
+                <h1 className="mt-4 font-display text-5xl text-rose-950">{selectedPlan.title}</h1>
+                <p className={`mt-3 text-xl font-semibold ${selectedVisual.mutedClass}`}>{selectedPlan.price}</p>
+                <p className="mt-4 max-w-2xl text-base leading-8 text-rose-900/80">{selectedPlan.description}</p>
+              </div>
+
+              <div className="rounded-[1.75rem] border border-white/70 bg-white/75 px-5 py-5 shadow-glass lg:min-w-[15rem]">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-600/70">Duration</p>
+                <p className="mt-3 text-3xl font-bold text-rose-950">
+                  {selectedPlan.durationDays ? `${selectedPlan.durationDays} Days` : 'Custom'}
                 </p>
-              ) : null}
-              {plan.amount ? (
-                <button
-                  type="button"
-                  onClick={() => handleCheckout(plan)}
-                  className="btn-primary mt-8 w-full justify-center"
-                >
-                  {plan.cta}
-                </button>
-              ) : (
-                <Link to={buildContactPlanHref(plan)} className="btn-primary mt-8 w-full justify-center">
-                  {plan.cta}
-                </Link>
-              )}
-            </motion.article>
-          ))}
-          <motion.article
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.22 }}
-            whileHover={{ y: -8, scale: 1.02 }}
-            className="rounded-[2rem] border border-white/50 bg-white/55 p-7 shadow-[0_28px_80px_-30px_rgba(193,83,131,0.55)] backdrop-blur-xl"
-          >
-            <h3 className="font-display text-5xl font-semibold leading-none text-rose-950">
-              Premium
-              <span className="mt-1 block text-[2.25rem] leading-none">Wellness Plan</span>
-            </h3>
-            <p className="mt-6 text-3xl font-bold text-rose-800">{premiumPlan.price}</p>
-            <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
-              Payment support on WhatsApp
-            </p>
-            <div className="mt-6 space-y-3">
-              {premiumPlan.includes.map((item) => (
-                <div key={item} className="flex items-center gap-3 text-sm font-medium text-rose-900/85">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-200/80 text-xs font-bold text-rose-700">
-                    +
-                  </span>
-                  {item}
+                <p className="mt-2 text-sm leading-7 text-rose-900/75">Manual payment support is available for this plan.</p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              {selectedServiceTags.map((tag) => (
+                <span key={tag.key} className={`rounded-full px-4 py-2 text-sm font-semibold ${tag.className}`}>
+                  {tag.label}
+                </span>
+              ))}
+            </div>
+
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {selectedPlan.features.map((feature) => (
+                <div key={feature} className="rounded-[1.5rem] border border-white/65 bg-white/70 px-4 py-4 text-sm font-medium text-rose-900/82 shadow-glass">
+                  {feature}
                 </div>
               ))}
             </div>
-            <button
-              type="button"
-              onClick={() => handleCheckout(premiumPlan)}
-              className="btn-primary mt-8 w-full justify-center"
-            >
-              Pay Now
-            </button>
-          </motion.article>
-        </div>
-        <PaymentStatus status={paymentStatus} />
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href={whatsappHref} target="_blank" rel="noreferrer" className="btn-secondary">
+                WhatsApp Communication
+              </a>
+              <Link to={contactHref} className={`inline-flex items-center justify-center rounded-full px-7 py-3 text-[0.95rem] font-bold tracking-[0.02em] shadow-dream transition duration-300 hover:scale-[1.03] ${selectedVisual.primaryButtonClass}`}>
+                Choose Plan
+              </Link>
+            </div>
+          </GlassPanel>
+        </motion.div>
       </div>
 
       <ReviewSection
         anchorId="pricing-reviews"
         title="Plan Reviews"
-        description="Member feedback on each plan."
+        description=""
         items={pricingReviewItems}
       />
-
-      <div className="mx-auto max-w-7xl grid gap-5 lg:grid-cols-2">
-        <GlassPanel className="rounded-[2.25rem] p-8 shadow-bloom">
-          <h2 className="font-display text-4xl font-semibold text-rose-950">Free Trial</h2>
-          <div className="mt-5 space-y-4">
-            {trialBenefits.map((offer) => (
-              <div key={offer} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
-                {offer}
-              </div>
-            ))}
-          </div>
-        </GlassPanel>
-        <GlassPanel className="rounded-[2.25rem] p-8 shadow-bloom">
-          <h2 className="font-display text-4xl font-semibold text-rose-950">Timings</h2>
-          <div className="mt-5 space-y-4">
-            {timingHighlights.map((item) => (
-              <div key={item} className="rounded-2xl bg-white/55 px-4 py-4 text-sm font-medium leading-7 text-rose-900/82">
-                {item}
-              </div>
-            ))}
-          </div>
-          <Link to="/contact" className="btn-primary mt-8 inline-flex">
-            Start Free Trial
-          </Link>
-        </GlassPanel>
-      </div>
     </div>
   );
 }
-

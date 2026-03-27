@@ -1,11 +1,15 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import AdminRoute from './components/AdminRoute';
 import AppShell from './components/AppShell';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import AboutPage from './pages/AboutPage';
+import AdminBookingsPage from './pages/AdminBookingsPage';
+import AdminPaymentsPage from './pages/AdminPaymentsPage';
 import AuthPage from './pages/AuthPage';
 import ContactPage from './pages/ContactPage';
+import DashboardPage from './pages/DashboardPage';
 import GuidesPage from './pages/GuidesPage';
 import HomePage from './pages/HomePage';
 import PricingPage from './pages/PricingPage';
@@ -34,6 +38,30 @@ export default function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/guides" element={<GuidesPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route
+              path="/dashboard"
+              element={(
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              )}
+            />
+            <Route
+              path="/admin/payments"
+              element={(
+                <AdminRoute>
+                  <AdminPaymentsPage />
+                </AdminRoute>
+              )}
+            />
+            <Route
+              path="/admin/bookings"
+              element={(
+                <AdminRoute>
+                  <AdminBookingsPage />
+                </AdminRoute>
+              )}
+            />
             <Route
               path="/contact"
               element={(

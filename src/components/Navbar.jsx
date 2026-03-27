@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { navigationLinks } from '../data/siteData';
 import { BrandLogo } from './BrandLogo';
+import NotificationBell from './NotificationBell';
 
 function navLinkClass(isActive) {
   return [
@@ -15,6 +16,30 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
+
+  const navItems = useMemo(() => {
+    if (user?.role === 'ADMIN') {
+      return [
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'Guides', href: '/guides' },
+        { label: 'Approvals', href: '/admin/payments' },
+        { label: 'Bookings', href: '/admin/bookings' },
+      ];
+    }
+
+    if (!isAuthenticated) {
+      return navigationLinks;
+    }
+
+    const dashboardLink = { label: 'Dashboard', href: '/dashboard' };
+    const [homeLink, ...restLinks] = navigationLinks;
+
+    if (!homeLink) {
+      return [dashboardLink];
+    }
+
+    return [homeLink, dashboardLink, ...restLinks];
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     setIsOpen(false);
@@ -30,7 +55,7 @@ export default function Navbar() {
             </Link>
 
             <nav className="hidden items-center gap-2 md:flex">
-              {navigationLinks.map((link) => (
+              {navItems.map((link) => (
                 <NavLink key={link.href} to={link.href} className={({ isActive }) => navLinkClass(isActive)}>
                   {({ isActive }) => (
                     <span className="relative inline-block">
@@ -47,6 +72,7 @@ export default function Navbar() {
             <div className="hidden items-center gap-3 md:flex">
               {isAuthenticated ? (
                 <>
+                  <NotificationBell />
                   <div className="rounded-full border border-white/55 bg-white/60 px-4 py-2 text-sm font-semibold text-rose-900 shadow-glass">
                     {user?.name}
                   </div>
@@ -83,7 +109,7 @@ export default function Navbar() {
           {isOpen ? (
             <div className="mt-4 rounded-[2rem] border border-white/50 bg-white/50 p-4 backdrop-blur-lg md:hidden">
               <div className="flex flex-col gap-2">
-                {navigationLinks.map((link) => (
+                {navItems.map((link) => (
                   <NavLink
                     key={link.href}
                     to={link.href}
@@ -101,6 +127,9 @@ export default function Navbar() {
                     <div className="rounded-2xl bg-white/60 px-4 py-3 text-sm font-semibold text-rose-900 shadow-glass">
                       Signed in as {user?.name}
                     </div>
+                    {user?.role === 'ADMIN' ? (
+                      <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">Admin tools are available from Dashboard, Guides, Approvals, and Bookings.</p>
+                    ) : null}
                     <button type="button" onClick={logout} className="btn-secondary mt-2 w-full justify-center">
                       Log Out
                     </button>

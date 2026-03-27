@@ -191,40 +191,106 @@ export const specialPrograms = withReviewMeta(specialProgramItems, 'SPECIAL_PROG
 
 const pricingPlanItems = [
   {
+    planKey: 'BEGINNER_PLAN',
     title: 'Beginner Plan',
     price: '30 Days - Rs. 1999',
     amount: 1999,
-    description: 'A simple start with guided yoga and breathwork.',
-    cta: 'Pay Now',
+    durationDays: 30,
+    description: 'Yoga classes with weekly consultation for a steady start.',
+    features: [
+      'Guided yoga classes',
+      'Weekly consultation',
+      'Simple routine support',
+      'Progress dashboard',
+    ],
+    workflowSteps: [
+      'Attend your yoga class',
+      'Track practice progress',
+      'Join the weekly consultation',
+      'Review your weekly growth',
+    ],
+    cta: 'Choose Plan',
+    paymentEnabled: true,
   },
   {
+    planKey: 'INTERMEDIATE_PLAN',
     title: 'Intermediate Plan',
     price: '15 Days (2 Sessions / Day)',
     amount: null,
-    description: 'Two guided sessions each day for faster progress.',
-    cta: 'Talk to Us',
+    durationDays: 15,
+    description: 'Yoga classes with a diet plan for stronger daily discipline.',
+    features: [
+      'Guided yoga classes',
+      'Diet plan',
+      'Daily food follow-up',
+      'Progress dashboard',
+    ],
+    workflowSteps: [
+      'Follow the yoga schedule',
+      'Track your diet check-ins',
+      'Update daily progress',
+      'Complete guided follow-up',
+    ],
+    cta: 'Choose Plan',
+    paymentEnabled: true,
   },
   {
+    planKey: 'ADVANCED_PLAN',
     title: 'Advanced Plan',
     price: 'Fully Personalized',
     amount: null,
-    description: 'A personalized plan for your goals.',
-    cta: 'Talk on WhatsApp',
+    durationDays: 30,
+    description: 'Yoga, personalized meditation, and diet support in one plan.',
+    features: [
+      'Personalized yoga',
+      'Personalized meditation',
+      'Diet guidance',
+      'Progress review',
+    ],
+    workflowSteps: [
+      'Complete yoga practice',
+      'Follow the meditation routine',
+      'Track diet consistency',
+      'Review guided progress',
+    ],
+    cta: 'Choose Plan',
+    paymentEnabled: true,
   },
 ];
 
 export const pricingPlans = withReviewMeta(pricingPlanItems, 'PLAN', 'Membership Plan', 'plan');
 
 export const premiumPlan = {
+  planKey: 'PREMIUM_WELLNESS_PLAN',
   title: 'Premium Wellness Plan',
   price: 'Rs. 3000 / Month',
   amount: 3000,
-  includes: [
-    'Personalized Yoga Plan',
-    'Diet Chart',
-    'Weekly Consultation',
-    'Progress Tracking',
+  durationDays: 30,
+  description: 'Full personal guidance with yoga, meditation, yoga nidra, diet, and weekly consultation.',
+  features: [
+    'Personalized yoga',
+    'Diet plan',
+    'Weekly consultation',
+    'Meditation support',
+    'Yoga nidra',
+    'Choice-based yoga path',
   ],
+  workflowSteps: [
+    'Follow your personalized yoga flow',
+    'Track diet and wellness goals',
+    'Complete meditation or yoga nidra',
+    'Attend weekly review and consultation',
+  ],
+  includes: [
+    'Personalized yoga',
+    'Diet plan weekly',
+    'Weekly consultation',
+    'Meditation support',
+    'Yoga Nidra',
+    'Any choice of yoga',
+  ],
+  cta: 'Choose Plan',
+  paymentEnabled: true,
   reviewItemId: 'plan-premium-wellness-plan',
   reviewItemType: 'PLAN',
   reviewItemTypeLabel: 'Membership Plan',
@@ -364,30 +430,37 @@ export const contactSelectionOptions = [
     value: '',
     planPrice: '',
     amount: null,
+    paymentEnabled: false,
   },
   ...pricingPlans.map((plan) => ({
     label: `${plan.title} - ${plan.price}`,
     value: plan.title,
     planPrice: plan.price,
     amount: plan.amount,
+    durationDays: plan.durationDays,
+    paymentEnabled: plan.paymentEnabled,
   })),
   {
     label: `${premiumPlan.title} - ${premiumPlan.price}`,
     value: premiumPlan.title,
     planPrice: premiumPlan.price,
     amount: premiumPlan.amount,
+    durationDays: premiumPlan.durationDays,
+    paymentEnabled: premiumPlan.paymentEnabled,
   },
   ...specialPrograms.map((program) => ({
     label: `${program.title} - ${program.duration}`,
     value: program.title,
     planPrice: program.duration,
     amount: null,
+    paymentEnabled: false,
   })),
   ...yogaTypes.map((type) => ({
     label: `${type.title} - Custom Consultation`,
     value: type.title,
     planPrice: 'Custom Consultation',
     amount: null,
+    paymentEnabled: false,
   })),
 ];
 
@@ -411,4 +484,7 @@ export function buildContactPlanHref(plan) {
 
   return `/contact?${params.toString()}`;
 }
+
+
+
 

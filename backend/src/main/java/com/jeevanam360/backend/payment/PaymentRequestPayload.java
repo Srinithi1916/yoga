@@ -11,6 +11,8 @@ public record PaymentRequestPayload(
     @NotBlank String whatsapp,
     @NotBlank String selectedPlan,
     String planPrice,
+    @NotBlank String paymentMethod,
+    @NotBlank String transactionReference,
     BigDecimal amount,
     String currency,
     String note

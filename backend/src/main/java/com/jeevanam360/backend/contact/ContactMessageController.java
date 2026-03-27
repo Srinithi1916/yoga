@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ContactMessageController {
 
     private final ContactMessageService contactMessageService;
+    private final ContactNotificationService contactNotificationService;
 
-    public ContactMessageController(ContactMessageService contactMessageService) {
+    public ContactMessageController(
+        ContactMessageService contactMessageService,
+        ContactNotificationService contactNotificationService
+    ) {
         this.contactMessageService = contactMessageService;
+        this.contactNotificationService = contactNotificationService;
     }
 
     @PostMapping
@@ -39,7 +44,7 @@ public class ContactMessageController {
             stored = false;
         }
 
-        ContactEmailResult emailResult = new ContactEmailResult(false, "Email is handled by the frontend.");
+        ContactEmailResult emailResult = contactNotificationService.sendContactNotification(message);
         HttpStatus responseStatus = stored ? HttpStatus.CREATED : HttpStatus.ACCEPTED;
 
         return ResponseEntity

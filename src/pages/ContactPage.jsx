@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
 import SectionHeading from '../components/SectionHeading';
-import { ContactIllustration } from '../components/Illustrations';
 import {
   brandDetails,
   contactSelectionOptions,
@@ -11,16 +10,19 @@ import {
 import { useAuth } from '../context/AuthContext';
 import {
   buildContactWhatsappUrl,
-  sendContactEmail,
   submitContactMessage,
   submitPaymentRequest,
 } from '../lib/contactWorkflow';
+
+const paymentMethods = ['UPI Transfer', 'Bank Transfer', 'WhatsApp Confirmation'];
 
 const emptyForm = {
   whatsapp: '',
   selectedPlan: '',
   planPrice: '',
   amount: '',
+  paymentMethod: 'UPI Transfer',
+  transactionReference: '',
   message: '',
 };
 
@@ -39,6 +41,12 @@ export default function ContactPage() {
   const { user, token } = useAuth();
   const [form, setForm] = useState(() => createFormFromParams(searchParams, user?.phone || ''));
   const [status, setStatus] = useState({ type: 'idle', message: '', whatsappUrl: '' });
+
+  const selectedOption = useMemo(
+    () => getContactSelectionOption(form.selectedPlan),
+    [form.selectedPlan],
+  );
+  const requiresPayment = Boolean(selectedOption?.paymentEnabled);
 
   useEffect(() => {
     setForm((current) => ({
@@ -60,6 +68,8 @@ export default function ContactPage() {
         selectedPlan: value,
         planPrice: option?.planPrice || '',
         amount: option?.amount ? String(option.amount) : '',
+        paymentMethod: option?.paymentEnabled ? current.paymentMethod : 'UPI Transfer',
+        transactionReference: option?.paymentEnabled ? current.transactionReference : '',
       }));
       return;
     }
@@ -74,56 +84,57 @@ export default function ContactPage() {
       ...form,
       name: user.name,
       email: user.email,
-      source: 'website-contact-form',
+      source: requiresPayment ? 'website-plan-activation' : 'website-contact-form',
     };
     const whatsappUrl = buildContactWhatsappUrl(payload);
 
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     setStatus({
       type: 'submitting',
-      message: 'Opening WhatsApp and sending your enquiry...',
+      message: requiresPayment ? 'Submitting your payment for review...' : 'Sending your message...',
       whatsappUrl,
     });
 
-    const [contactResult, paymentResult, emailResult] = await Promise.allSettled([
-      submitContactMessage(payload, token),
-      submitPaymentRequest(payload, token),
-      sendContactEmail(payload),
-    ]);
+    try {
+      if (requiresPayment) {
+        const [paymentResult, contactResult] = await Promise.allSettled([
+          submitPaymentRequest(payload, token),
+          submitContactMessage(payload, token),
+        ]);
 
-    const contactSaved = contactResult.status === 'fulfilled';
-    const paymentSaved = paymentResult.status === 'fulfilled';
-    const emailSent = emailResult.status === 'fulfilled';
+        const paymentSaved = paymentResult.status === 'fulfilled' && paymentResult.value;
+        const contactSaved = contactResult.status === 'fulfilled';
 
-    const messages = ['WhatsApp opened.'];
+        if (!paymentSaved) {
+          throw new Error(
+            paymentResult.status === 'rejected'
+              ? paymentResult.reason?.message || 'Could not submit your payment request.'
+              : 'Could not submit your payment request.',
+          );
+        }
 
-    if (contactSaved) {
-      const storageStatus = contactResult.value?.storageStatus;
-      if (storageStatus) {
-        messages.push(storageStatus);
+        setStatus({
+          type: 'success',
+          message: contactSaved
+            ? 'Payment request submitted. Admin will review it, then your plan will activate on your dashboard.'
+            : 'Payment request submitted. Admin will review it, then your plan will activate on your dashboard.',
+          whatsappUrl,
+        });
+      } else {
+        const response = await submitContactMessage(payload, token);
+        setStatus({
+          type: response?.stored ? 'success' : 'error',
+          message: response?.storageStatus || 'Your message was sent.',
+          whatsappUrl,
+        });
       }
-    } else {
-      messages.push('Could not save your enquiry.');
-    }
 
-    if (emailSent) {
-      messages.push('Email sent successfully.');
-    } else {
-      messages.push('Email failed. Please use WhatsApp.');
-    }
-
-    if (paymentSaved && form.selectedPlan) {
-      messages.push('Payment request saved.');
-    }
-
-    setStatus({
-      type: contactSaved && emailSent ? 'success' : 'error',
-      message: messages.join(' '),
-      whatsappUrl,
-    });
-
-    if (contactSaved && emailSent) {
       setForm(createFormFromParams(searchParams, user?.phone || ''));
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message: error.message || 'Could not submit your request right now.',
+        whatsappUrl,
+      });
     }
   }
 
@@ -133,21 +144,22 @@ export default function ContactPage() {
         <GlassPanel className="rounded-[2.75rem] px-6 py-10 shadow-bloom sm:px-10 lg:px-12 lg:py-14">
           <SectionHeading
             eyebrow="Contact"
-            title="Contact & Booking"
-            description="Your saved details are ready. Send your message here."
+            title={requiresPayment ? 'Plan Activation & Payment Review' : 'Contact & Booking'}
+            description="Use your saved account details to send a message or submit a plan payment reference for activation."
           />
         </GlassPanel>
       </div>
 
-      <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="mx-auto grid max-w-7xl gap-5 lg:grid-cols-[0.82fr_1.18fr]">
         <GlassPanel className="rounded-[2.5rem] p-8 shadow-bloom">
           <div className="space-y-5">
             <div>
               <h2 className="font-display text-5xl text-rose-950">{brandDetails.promise}</h2>
               <p className="mt-4 text-base leading-8 text-rose-900/82">
-                Your saved details are ready. Share your goal or question.
+                Your saved account details are ready. Submit your plan payment or share your question here.
               </p>
             </div>
+
             <div className="space-y-3 rounded-[1.75rem] bg-white/55 px-5 py-5 text-sm leading-7 text-rose-900/82 shadow-glass">
               <p>
                 <span className="font-semibold">Name:</span> {user.name}
@@ -160,16 +172,23 @@ export default function ContactPage() {
               </p>
               {form.selectedPlan ? (
                 <p>
-                  <span className="font-semibold">Plan:</span> {form.selectedPlan}
+                  <span className="font-semibold">Selected Plan:</span> {form.selectedPlan}
+                </p>
+              ) : null}
+              {form.planPrice ? (
+                <p>
+                  <span className="font-semibold">Price / Duration:</span> {form.planPrice}
                 </p>
               ) : null}
             </div>
-            <div className="space-y-3">
-              <Link to="/pricing" className="btn-secondary inline-flex">
-                View Pricing
-              </Link>
+
+            <div className="rounded-[1.75rem] bg-white/60 px-5 py-5 text-sm leading-7 text-rose-900/82 shadow-glass">
+              Payment reference and WhatsApp details are enough here. Admin review happens after you submit.
             </div>
-            <ContactIllustration className="mx-auto mt-6 w-full max-w-sm" />
+
+            <Link to="/pricing" className="btn-secondary inline-flex">
+              Back to Pricing
+            </Link>
           </div>
         </GlassPanel>
 
@@ -206,9 +225,47 @@ export default function ContactPage() {
                 ))}
               </select>
             </div>
+
+            {requiresPayment ? (
+              <>
+                <div>
+                  <label htmlFor="paymentMethod" className="mb-2 block text-sm font-semibold text-rose-900">
+                    Payment Method
+                  </label>
+                  <select
+                    id="paymentMethod"
+                    name="paymentMethod"
+                    value={form.paymentMethod}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-white/60 bg-white/60 px-4 py-3 text-rose-950 outline-none transition focus:border-rose-300 focus:bg-white/80"
+                  >
+                    {paymentMethods.map((method) => (
+                      <option key={method} value={method}>
+                        {method}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="transactionReference" className="mb-2 block text-sm font-semibold text-rose-900">
+                    Transaction Reference / UTR
+                  </label>
+                  <input
+                    id="transactionReference"
+                    name="transactionReference"
+                    value={form.transactionReference}
+                    onChange={handleChange}
+                    required={requiresPayment}
+                    placeholder="Enter the payment reference"
+                    className="w-full rounded-2xl border border-white/60 bg-white/60 px-4 py-3 text-rose-950 outline-none transition focus:border-rose-300 focus:bg-white/80"
+                  />
+                </div>
+              </>
+            ) : null}
+
             <div>
               <label htmlFor="message" className="mb-2 block text-sm font-semibold text-rose-900">
-                Message
+                {requiresPayment ? 'Note for admin' : 'Message'}
               </label>
               <textarea
                 id="message"
@@ -216,7 +273,8 @@ export default function ContactPage() {
                 rows="5"
                 value={form.message}
                 onChange={handleChange}
-                required
+                required={!requiresPayment}
+                placeholder={requiresPayment ? 'Add any extra note for admin review.' : 'Write your message here.'}
                 className="w-full rounded-2xl border border-white/60 bg-white/60 px-4 py-3 text-rose-950 outline-none transition focus:border-rose-300 focus:bg-white/80"
               />
             </div>
@@ -225,7 +283,11 @@ export default function ContactPage() {
               disabled={status.type === 'submitting'}
               className="btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {status.type === 'submitting' ? 'Sending...' : 'Send Message'}
+              {status.type === 'submitting'
+                ? 'Submitting...'
+                : requiresPayment
+                  ? 'Submit Payment For Review'
+                  : 'Send Message'}
             </button>
             {status.type !== 'idle' ? (
               <div className="rounded-2xl bg-white/60 px-4 py-4 text-sm leading-7 text-rose-900/85">
@@ -237,7 +299,7 @@ export default function ContactPage() {
                     rel="noreferrer"
                     className="btn-secondary mt-4 inline-flex"
                   >
-                    Open WhatsApp
+                    Contact on WhatsApp
                   </a>
                 ) : null}
               </div>

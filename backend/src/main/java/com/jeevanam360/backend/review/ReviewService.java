@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReviewService {
 
+    private static final List<String> VERIFIED_PAYMENT_STATUSES = List.of("APPROVED", "PAID");
+
     private final ReviewRepository reviewRepository;
     private final ContactMessageRepository contactMessageRepository;
     private final PaymentRequestRepository paymentRequestRepository;
@@ -86,8 +88,16 @@ public class ReviewService {
     private boolean hasVerifiedParticipation(AuthenticatedUser user, String itemName) {
         return contactMessageRepository.existsByUserIdAndSelectedPlanIgnoreCase(user.id(), itemName)
             || contactMessageRepository.existsByEmailIgnoreCaseAndSelectedPlanIgnoreCase(user.email(), itemName)
-            || paymentRequestRepository.existsByUserIdAndSelectedPlanIgnoreCase(user.id(), itemName)
-            || paymentRequestRepository.existsByEmailIgnoreCaseAndSelectedPlanIgnoreCase(user.email(), itemName);
+            || paymentRequestRepository.existsByUserIdAndSelectedPlanIgnoreCaseAndStatusIn(
+                user.id(),
+                itemName,
+                VERIFIED_PAYMENT_STATUSES
+            )
+            || paymentRequestRepository.existsByEmailIgnoreCaseAndSelectedPlanIgnoreCaseAndStatusIn(
+                user.email(),
+                itemName,
+                VERIFIED_PAYMENT_STATUSES
+            );
     }
 
     private List<Review> sortedReviews(List<Review> reviews) {

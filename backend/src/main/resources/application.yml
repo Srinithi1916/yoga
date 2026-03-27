@@ -37,6 +37,10 @@ app:
   auth:
     jwt-secret: ${JWT_SECRET:jeevanam360-please-change-this-secret-for-production-2026}
     token-expiration-hours: ${JWT_EXPIRATION_HOURS:72}
+  admin:
+    emails: ${APP_ADMIN_EMAILS:srinithisrinithi09@gmail.com}
+  notifications:
+    reminder-cron: ${REMINDER_CRON:0 0 9 * * *}
 
 razorpay:
   key-id: ${RAZORPAY_KEY_ID:}

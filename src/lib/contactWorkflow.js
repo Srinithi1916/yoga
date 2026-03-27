@@ -13,8 +13,10 @@ function sanitizePayload(payload) {
     whatsapp: payload.whatsapp.trim(),
     selectedPlan: (payload.selectedPlan || '').trim(),
     planPrice: (payload.planPrice || '').trim(),
+    paymentMethod: (payload.paymentMethod || '').trim(),
+    transactionReference: (payload.transactionReference || '').trim(),
     amount: payload.amount ? Number(payload.amount) : null,
-    message: payload.message.trim(),
+    message: (payload.message || '').trim(),
     source: payload.source || 'website-contact-form',
   };
 }
@@ -50,6 +52,8 @@ export function buildWhatsappMessage(payload) {
   const clean = sanitizePayload(payload);
   const planLine = clean.selectedPlan ? `Plan / Program: ${clean.selectedPlan}` : 'Plan / Program: General enquiry';
   const priceLine = clean.planPrice ? `Price / Duration: ${clean.planPrice}` : 'Price / Duration: To be discussed';
+  const paymentLine = clean.paymentMethod ? `Payment Method: ${clean.paymentMethod}` : null;
+  const transactionLine = clean.transactionReference ? `Transaction Reference: ${clean.transactionReference}` : null;
 
   return [
     'Hi, I want to join Jeevanam 360.',
@@ -59,9 +63,13 @@ export function buildWhatsappMessage(payload) {
     `WhatsApp: ${clean.whatsapp}`,
     planLine,
     priceLine,
+    paymentLine,
+    transactionLine,
     'Message:',
-    clean.message,
-  ].join('\n');
+    clean.message || 'Please guide me with the next step.',
+  ]
+    .filter(Boolean)
+    .join('\n');
 }
 
 export function buildContactWhatsappUrl(payload) {
@@ -105,7 +113,7 @@ export function submitContactMessage(payload, token) {
       selectedPlan: clean.selectedPlan,
       planPrice: clean.planPrice,
       amount: clean.amount,
-      message: clean.message,
+      message: clean.message || 'Website contact request',
       source: clean.source,
     },
   });
@@ -114,7 +122,7 @@ export function submitContactMessage(payload, token) {
 export function submitPaymentRequest(payload, token) {
   const clean = sanitizePayload(payload);
 
-  if (!clean.selectedPlan) {
+  if (!clean.selectedPlan || !clean.paymentMethod || !clean.transactionReference) {
     return Promise.resolve(null);
   }
 
@@ -127,6 +135,8 @@ export function submitPaymentRequest(payload, token) {
       whatsapp: clean.whatsapp,
       selectedPlan: clean.selectedPlan,
       planPrice: clean.planPrice,
+      paymentMethod: clean.paymentMethod,
+      transactionReference: clean.transactionReference,
       amount: clean.amount,
       currency: 'INR',
       note: clean.message,
