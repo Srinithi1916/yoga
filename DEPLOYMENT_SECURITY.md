@@ -55,7 +55,7 @@ Set these in your backend hosting dashboard:
 - `MAIL_USERNAME=your-email@gmail.com`
 - `MAIL_PASSWORD=your-app-password`
 - `MAIL_FROM=your-email@gmail.com`
-- `CONTACT_RECEIVER_EMAIL=srinithisrinithi09@gmail.com`
+- `CONTACT_RECEIVER_EMAIL=contact@example.com`
 - `MAIL_SMTP_AUTH=true`
 - `MAIL_SMTP_STARTTLS_ENABLE=true`
 - `MAIL_BRAND_NAME=Jeevanam 360`

@@ -188,17 +188,23 @@ public class MembershipService {
     private void updateDailyProgress(MembershipRecord membership, MembershipProgressRequest request) {
         LocalDate selectedDate = parseDate(request.entryDate());
         validateDateInMembershipRange(membership, selectedDate);
+        validateDateIsToday(selectedDate);
         initializeLegacyBaselines(membership);
 
         List<MembershipDailyProgressEntry> entries = membership.getDailyProgressEntries() == null
             ? new ArrayList<>()
             : new ArrayList<>(membership.getDailyProgressEntries());
 
+        int selectedSessions = countSelected(entries, MembershipDailyProgressEntry::isSessionCompleted);
+        int selectedConsultations = countSelected(entries, MembershipDailyProgressEntry::isConsultationCompleted);
+        int selectedDietCheckIns = countSelected(entries, MembershipDailyProgressEntry::isDietCheckInCompleted);
+        int selectedMeditations = countSelected(entries, MembershipDailyProgressEntry::isMeditationCompleted);
+
         MembershipDailyProgressEntry entry = findOrCreateEntry(entries, request.entryDate());
-        entry.setSessionCompleted(resolveSelection(request.sessionCompleted(), entry.isSessionCompleted(), membership.getTargetSessions(), "Sessions"));
-        entry.setConsultationCompleted(resolveSelection(request.consultationCompleted(), entry.isConsultationCompleted(), membership.getTargetConsultations(), "Consultations"));
-        entry.setDietCheckInCompleted(resolveSelection(request.dietCheckInCompleted(), entry.isDietCheckInCompleted(), membership.getTargetDietCheckIns(), "Diet check-ins"));
-        entry.setMeditationCompleted(resolveSelection(request.meditationCompleted(), entry.isMeditationCompleted(), membership.getTargetMeditations(), "Meditations"));
+        entry.setSessionCompleted(resolveSelection(request.sessionCompleted(), entry.isSessionCompleted(), membership.getTargetSessions(), "Sessions", selectedSessions));
+        entry.setConsultationCompleted(resolveSelection(request.consultationCompleted(), entry.isConsultationCompleted(), membership.getTargetConsultations(), "Consultations", selectedConsultations));
+        entry.setDietCheckInCompleted(resolveSelection(request.dietCheckInCompleted(), entry.isDietCheckInCompleted(), membership.getTargetDietCheckIns(), "Diet check-ins", selectedDietCheckIns));
+        entry.setMeditationCompleted(resolveSelection(request.meditationCompleted(), entry.isMeditationCompleted(), membership.getTargetMeditations(), "Meditations", selectedMeditations));
 
         entries.removeIf(existing -> request.entryDate().equals(existing.getEntryDate())
             && !existing.isSessionCompleted()
@@ -253,13 +259,17 @@ public class MembershipService {
         return entry;
     }
 
-    private boolean resolveSelection(Boolean requested, boolean currentValue, int target, String label) {
+    private boolean resolveSelection(Boolean requested, boolean currentValue, int target, String label, int currentCount) {
         if (requested == null) {
             return currentValue;
         }
 
         if (Boolean.TRUE.equals(requested) && target <= 0) {
             throw new IllegalArgumentException(label + " are not included in your current plan.");
+        }
+
+        if (Boolean.TRUE.equals(requested) && !currentValue && currentCount >= target) {
+            throw new IllegalArgumentException(label + " have already reached the limit for your current plan.");
         }
 
         return Boolean.TRUE.equals(requested);
@@ -324,6 +334,13 @@ public class MembershipService {
         LocalDate endDate = membership.getEndAt().atZone(APP_ZONE).toLocalDate();
         if (selectedDate.isBefore(startDate) || selectedDate.isAfter(endDate)) {
             throw new IllegalArgumentException("Choose a date inside your active plan period.");
+        }
+    }
+
+    private void validateDateIsToday(LocalDate selectedDate) {
+        LocalDate today = LocalDate.now(APP_ZONE);
+        if (!selectedDate.equals(today)) {
+            throw new IllegalArgumentException("You can only update today's progress.");
         }
     }
 
@@ -409,3 +426,4 @@ public class MembershipService {
         return trimmed.isEmpty() ? null : trimmed;
     }
 }
+

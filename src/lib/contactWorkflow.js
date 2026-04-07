@@ -4,7 +4,7 @@ import { apiRequest } from './api';
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || '';
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || '';
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || '';
-const CONTACT_EMAIL = 'srinithisrinithi09@gmail.com';
+const CONTACT_EMAIL = 'jeevanam360@gmail.com';
 
 function sanitizePayload(payload) {
   return {

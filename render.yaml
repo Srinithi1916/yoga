@@ -24,6 +24,8 @@ services:
       - key: MAIL_PORT
         value: "587"
       - key: MAIL_FROM
-        value: srinithisrinithi09@gmail.com
+        sync: false
       - key: CONTACT_RECEIVER_EMAIL
-        value: srinithisrinithi09@gmail.com
+        sync: false
+      - key: APP_ADMIN_EMAILS
+        sync: false

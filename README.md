@@ -69,10 +69,14 @@ Required backend environment variables:
   Example: `http://localhost:5173,https://*.netlify.app,https://jeevanam360a.netlify.app`
 - `JWT_SECRET`
 - `JWT_EXPIRATION_HOURS`
+- `MAIL_FROM`
+- `CONTACT_RECEIVER_EMAIL`
+- `APP_ADMIN_EMAILS`
+- `APP_ADMIN_BOOTSTRAP_PASSWORD`
 - `RAZORPAY_KEY_ID`
 - `RAZORPAY_KEY_SECRET`
 
-Frontend contact email is currently sent through EmailJS, so those frontend env vars must also be present on Netlify:
+Frontend contact email uses public EmailJS browser keys, so those frontend env vars must also be present on Netlify:
 
 - `VITE_EMAILJS_SERVICE_ID`
 - `VITE_EMAILJS_TEMPLATE_ID`

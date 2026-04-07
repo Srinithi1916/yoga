@@ -135,7 +135,7 @@ function SummaryFact({ label, value }) {
   );
 }
 
-function ProgressChoiceButton({ type, target, completed, selected, disabled, onClick }) {
+function ProgressChoiceButton({ type, target, completed, selected, disabled, badgeLabel, onClick }) {
   const classes = disabled
     ? type.disabledClass
     : selected
@@ -155,7 +155,7 @@ function ProgressChoiceButton({ type, target, completed, selected, disabled, onC
           <p className="mt-2 text-2xl font-bold">{target > 0 ? `${completed}/${target}` : 'Not in plan'}</p>
         </div>
         <span className={`rounded-full px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] ${selected ? 'bg-white/20 text-white' : 'bg-black/5 text-current'}`}>
-          {disabled ? 'Locked' : selected ? 'Selected' : 'Tap'}
+          {badgeLabel || (disabled ? 'Locked' : selected ? 'Selected' : 'Tap')}
         </span>
       </div>
     </button>
@@ -196,19 +196,15 @@ function buildDailyEntryMap(entries = []) {
 }
 
 function resolveDefaultSelectedDate(membership) {
-  if (!membership?.startAt) {
+  if (!membership?.startAt || !membership?.endAt) {
     return '';
   }
 
   const startKey = buildDateKey(new Date(membership.startAt));
-  const endKey = membership?.endAt ? buildDateKey(new Date(membership.endAt)) : startKey;
+  const endKey = buildDateKey(new Date(membership.endAt));
   const todayKey = buildDateKey(new Date());
 
-  if (todayKey >= startKey && todayKey <= endKey) {
-    return todayKey;
-  }
-
-  return startKey;
+  return todayKey >= startKey && todayKey <= endKey ? todayKey : '';
 }
 
 function isDateWithinMembership(dateKey, membership) {
@@ -227,9 +223,11 @@ function buildPlanCalendar(membership, selectedDate, dailyEntryMap) {
   }
 
   const today = new Date();
+  const todayKey = buildDateKey(today);
   const startDate = parseDateKey(buildDateKey(new Date(membership.startAt)));
   const endDate = parseDateKey(buildDateKey(new Date(membership.endAt)));
-  const focusDate = selectedDate ? parseDateKey(selectedDate) : parseDateKey(resolveDefaultSelectedDate(membership));
+  const defaultDateKey = resolveDefaultSelectedDate(membership) || buildDateKey(startDate);
+  const focusDate = parseDateKey(selectedDate || defaultDateKey);
   const monthStart = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
   const gridStart = new Date(monthStart);
   gridStart.setDate(1 - monthStart.getDay());
@@ -241,14 +239,17 @@ function buildPlanCalendar(membership, selectedDate, dailyEntryMap) {
     const dateKey = buildDateKey(current);
     const entry = dailyEntryMap[dateKey];
     const activityTypes = DAY_PROGRESS_TYPES.filter((type) => entry?.[type.key]).map((type) => type.key);
+    const isActive = current >= startDate && current <= endDate;
+    const isToday = dateKey === todayKey;
 
     days.push({
       key: `${dateKey}-${index}`,
       dateKey,
       dayNumber: current.getDate(),
       inCurrentMonth: current.getMonth() === monthStart.getMonth(),
-      isActive: current >= startDate && current <= endDate,
-      isToday: isSameDay(current, today),
+      isActive,
+      isToday,
+      isEditable: isActive && isToday,
       isStart: isSameDay(current, startDate),
       isEnd: isSameDay(current, endDate),
       isSelected: dateKey === selectedDate,
@@ -295,7 +296,11 @@ function PlanCalendar({ membership, selectedDate, dailyEntryMap, onSelectDate })
           const cellClass = [
             'min-h-[5.25rem] rounded-2xl border px-2 py-2 text-left transition duration-300',
             day.inCurrentMonth ? 'text-rose-950' : 'text-rose-700/35',
-            day.isActive ? 'border-white/60 bg-rose-50/82 hover:-translate-y-1 hover:border-rose-200' : 'cursor-not-allowed border-white/30 bg-white/35',
+            day.isEditable
+              ? 'border-white/60 bg-rose-50/82 hover:-translate-y-1 hover:border-rose-200'
+              : day.isActive
+                ? 'cursor-not-allowed border-white/40 bg-white/45'
+                : 'cursor-not-allowed border-white/30 bg-white/35',
             day.isToday ? 'ring-2 ring-emerald-300 ring-offset-2 ring-offset-transparent' : '',
             day.isSelected ? 'border-rose-400 bg-white shadow-[0_18px_40px_-28px_rgba(190,24,93,0.7)]' : '',
           ].join(' ');
@@ -305,8 +310,8 @@ function PlanCalendar({ membership, selectedDate, dailyEntryMap, onSelectDate })
               key={day.key}
               type="button"
               className={cellClass}
-              disabled={!day.isActive}
-              onClick={() => day.isActive && onSelectDate(day.dateKey)}
+              disabled={!day.isEditable}
+              onClick={() => day.isEditable && onSelectDate(day.dateKey)}
             >
               <div className="flex items-center justify-between gap-1">
                 <span className="text-sm font-semibold">{day.dayNumber}</span>
@@ -379,6 +384,8 @@ export default function DashboardPage() {
   const planVisual = getPlanVisual(membership?.planKey);
   const serviceTags = getServiceTags(membership?.features || []);
   const dailyEntryMap = useMemo(() => buildDailyEntryMap(membership?.dailyProgressEntries || []), [membership?.dailyProgressEntries]);
+  const todayDateKey = useMemo(() => resolveDefaultSelectedDate(membership), [membership]);
+  const currentDayEntry = selectedDate ? dailyEntryMap[selectedDate] : null;
   const whatsappHref = membership
     ? buildWhatsappUrl(`Hi, I need support for my ${membership.planTitle}. Please guide me.`)
     : buildWhatsappUrl('Hi, I want to know more about the plans at Jeevanam 360.');
@@ -404,9 +411,8 @@ export default function DashboardPage() {
       return;
     }
 
-    const fallbackDate = resolveDefaultSelectedDate(membership);
-    setSelectedDate((current) => (isDateWithinMembership(current, membership) ? current : fallbackDate));
-  }, [hasActiveMembership, membership]);
+    setSelectedDate(todayDateKey);
+  }, [hasActiveMembership, todayDateKey]);
 
   useEffect(() => {
     if (!selectedDate) {
@@ -585,17 +591,21 @@ export default function DashboardPage() {
                 <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.6rem] border border-white/60 bg-white/65 px-4 py-4 shadow-glass">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-600/70">Selected date</p>
-                    <h3 className="mt-2 font-display text-3xl text-rose-950">{selectedDate ? formatDateLabel(selectedDate) : 'Pick a date'}</h3>
+                    <h3 className="mt-2 font-display text-3xl text-rose-950">{selectedDate ? formatDateLabel(selectedDate) : 'Today is not active yet'}</h3>
                   </div>
-                  <p className="text-sm leading-7 text-rose-900/72">Choose the services completed on this day.</p>
+                  <p className="text-sm leading-7 text-rose-900/72">Only today's date can be updated. Completed types lock when the plan limit is reached.</p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   {DAY_PROGRESS_TYPES.map((type) => {
                     const target = membership[type.targetKey] || 0;
                     const completed = membership[type.completedKey] || 0;
-                    const disabled = target <= 0;
                     const selected = Boolean(daySelection[type.key]);
+                    const savedForCurrentDay = Boolean(currentDayEntry?.[type.key]);
+                    const completedOnOtherDays = Math.max(0, completed - (savedForCurrentDay ? 1 : 0));
+                    const limitReached = target > 0 && !selected && completedOnOtherDays >= target;
+                    const disabled = !selectedDate || selectedDate !== todayDateKey || target <= 0 || limitReached;
+                    const badgeLabel = target <= 0 ? 'Locked' : limitReached ? 'Limit Reached' : selected ? 'Selected' : 'Tap';
 
                     return (
                       <ProgressChoiceButton
@@ -605,6 +615,7 @@ export default function DashboardPage() {
                         completed={completed}
                         selected={selected}
                         disabled={disabled}
+                        badgeLabel={badgeLabel}
                         onClick={() => {
                           if (disabled) {
                             return;
@@ -620,8 +631,8 @@ export default function DashboardPage() {
                   })}
                 </div>
 
-                <button type="submit" className="btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-70" disabled={!selectedDate || isSavingDay}>
-                  {isSavingDay ? 'Updating Day...' : 'Update Selected Date'}
+                <button type="submit" className="btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-70" disabled={!selectedDate || selectedDate !== todayDateKey || isSavingDay}>
+                  {isSavingDay ? 'Updating Today...' : 'Update Today'}
                 </button>
               </form>
             </GlassPanel>
@@ -652,3 +663,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

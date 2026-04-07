@@ -409,17 +409,17 @@ export const guideCollections = {
 };
 
 export const contactDetails = {
-  email: 'srinithisrinithi09@gmail.com',
-  phone: '7904049837',
-  whatsappNumber: '917904049837',
+  email: 'jeevanam360@gmail.com',
+  phone: '9566556008',
+  whatsappNumber: '919566556008',
   whatsappLink:
-    'https://wa.me/917904049837?text=Hi%20I%20want%20to%20join%20Jeevanam%20360',
+    'https://wa.me/919566556008?text=Hi%20I%20want%20to%20join%20Jeevanam%20360',
   tagline: brandDetails.supportLine,
 };
 
 export const socialLinks = [
-  { label: 'WhatsApp', href: 'https://wa.me/917904049837?text=Hi%20I%20want%20to%20join%20Jeevanam%20360', external: true },
-  { label: 'Email', href: 'mailto:srinithisrinithi09@gmail.com', external: true },
+  { label: 'WhatsApp', href: 'https://wa.me/919566556008?text=Hi%20I%20want%20to%20join%20Jeevanam%20360', external: true },
+  { label: 'Email', href: 'mailto:jeevanam360@gmail.com', external: true },
   { label: 'Guides', href: '/guides', external: false },
   { label: 'Free Trial', href: '/contact', external: false },
 ];

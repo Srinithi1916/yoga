@@ -20,7 +20,7 @@ public class AuthService {
         UserAccountRepository userAccountRepository,
         PasswordEncoder passwordEncoder,
         JwtService jwtService,
-        @Value("${app.admin.emails:srinithisrinithi09@gmail.com}") String adminEmails
+        @Value("${app.admin.emails:}") String adminEmails
     ) {
         this.userAccountRepository = userAccountRepository;
         this.passwordEncoder = passwordEncoder;

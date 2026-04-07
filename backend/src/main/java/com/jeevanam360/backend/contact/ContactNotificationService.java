@@ -37,7 +37,7 @@ public class ContactNotificationService {
     public ContactNotificationService(
         ObjectProvider<JavaMailSender> mailSenderProvider,
         @Value("${app.mail.brand-name:Jeevanam 360}") String brandName,
-        @Value("${app.mail.contact-recipient:srinithisrinithi09@gmail.com}") String contactRecipient,
+        @Value("${app.mail.contact-recipient:}") String contactRecipient,
         @Value("${app.mail.from-address:}") String configuredFromAddress,
         @Value("${spring.mail.host:}") String smtpHost,
         @Value("${spring.mail.username:}") String smtpUsername,

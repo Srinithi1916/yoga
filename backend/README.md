@@ -27,6 +27,10 @@ $env:CORS_ALLOWED_ORIGINS="http://localhost:5173,https://*.netlify.app,https://j
 $env:SERVER_PORT="8080"
 $env:JWT_SECRET="change-this-jwt-secret-for-production"
 $env:JWT_EXPIRATION_HOURS="72"
+$env:MAIL_FROM="contact@example.com"
+$env:CONTACT_RECEIVER_EMAIL="contact@example.com"
+$env:APP_ADMIN_EMAILS="admin@example.com"
+$env:APP_ADMIN_BOOTSTRAP_PASSWORD="change-admin-password"
 
 $env:RAZORPAY_KEY_ID="rzp_test_xxxxx"
 $env:RAZORPAY_KEY_SECRET="your_secret_here"
@@ -34,8 +38,8 @@ $env:RAZORPAY_KEY_SECRET="your_secret_here"
 
 Note:
 
-- Contact email is currently sent from the frontend through EmailJS.
-- SMTP mail settings are optional unless you decide to move email sending back to the backend later.
+- Contact enquiries are saved in MongoDB and backend mail can also notify your inbox when SMTP is configured.
+- Keep SMTP credentials, contact recipient, and admin bootstrap values in environment variables, not in git.
 
 
 If your local machine has trouble with `mongodb+srv` DNS lookups, use the direct Atlas host format instead of the SRV URI. Example:

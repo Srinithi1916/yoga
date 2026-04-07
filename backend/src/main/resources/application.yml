@@ -33,12 +33,15 @@ app:
   mail:
     brand-name: ${MAIL_BRAND_NAME:Jeevanam 360}
     from-address: ${MAIL_FROM:}
-    contact-recipient: ${CONTACT_RECEIVER_EMAIL:srinithisrinithi09@gmail.com}
+    contact-recipient: ${CONTACT_RECEIVER_EMAIL:}
   auth:
-    jwt-secret: ${JWT_SECRET:jeevanam360-please-change-this-secret-for-production-2026}
+    jwt-secret: ${JWT_SECRET:change-this-jwt-secret-before-production}
     token-expiration-hours: ${JWT_EXPIRATION_HOURS:72}
   admin:
-    emails: ${APP_ADMIN_EMAILS:srinithisrinithi09@gmail.com}
+    emails: ${APP_ADMIN_EMAILS:}
+    bootstrap-name: ${APP_ADMIN_NAME:Jeevanam 360 Admin}
+    bootstrap-phone: ${APP_ADMIN_PHONE:}
+    bootstrap-password: ${APP_ADMIN_BOOTSTRAP_PASSWORD:}
   notifications:
     reminder-cron: ${REMINDER_CRON:0 0 9 * * *}
 
