@@ -20,10 +20,9 @@ export default function Navbar() {
   const navItems = useMemo(() => {
     if (user?.role === 'ADMIN') {
       return [
+        { label: 'Home', href: '/' },
         { label: 'Dashboard', href: '/dashboard' },
-        { label: 'Guides', href: '/guides' },
         { label: 'Approvals', href: '/admin/payments' },
-        { label: 'Bookings', href: '/admin/bookings' },
       ];
     }
 
@@ -128,7 +127,7 @@ export default function Navbar() {
                       Signed in as {user?.name}
                     </div>
                     {user?.role === 'ADMIN' ? (
-                      <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">Admin tools are available from Dashboard, Guides, Approvals, and Bookings.</p>
+                      <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">Admin tools are available from Home, Dashboard, and Approvals. Bookings stay inside the admin dashboard.</p>
                     ) : null}
                     <button type="button" onClick={logout} className="btn-secondary mt-2 w-full justify-center">
                       Log Out
