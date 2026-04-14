@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 import GlassPanel from '../components/GlassPanel';
 import ReviewSection from '../components/ReviewSection';
 import SectionHeading from '../components/SectionHeading';
-import { buildContactPlanHref, buildWhatsappUrl, premiumPlan, pricingPlans } from '../data/siteData';
+import SpecialOfferSection from '../components/SpecialOfferSection';
+import { buildContactPlanHref, buildWhatsappUrl, membershipPlans } from '../data/siteData';
 import { getPlanVisual, getServiceTags } from '../lib/planVisuals';
 
-const allPlans = [...pricingPlans, premiumPlan];
+const allPlans = membershipPlans;
 
 const pricingReviewItems = allPlans.map((item) => ({
   title: item.title,
@@ -73,6 +74,13 @@ export default function PricingPage() {
   return (
     <div className="space-y-8 px-4 pb-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        <SpecialOfferSection
+          eyebrow="Offer Plans"
+          title="Special Offers"
+          description="Claim the new-user trial, the launch offer, or the yoga + diet offer, then continue to the full plans below."
+          panelClassName="mb-8"
+        />
+
         <GlassPanel className="rounded-[2.75rem] px-6 py-10 shadow-bloom sm:px-10 lg:px-12 lg:py-14">
           <div className="flex flex-col gap-8">
             <SectionHeading

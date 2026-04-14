@@ -1,5 +1,6 @@
 package com.jeevanam360.backend.auth;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -45,6 +46,7 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setRole(resolveRole(normalizedEmail));
         user.setActive(true);
+        user.setCreatedAt(Instant.now());
 
         UserAccount saved = userAccountRepository.save(user);
         return buildAuthResponse(saved);

@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface MembershipRepository extends MongoRepository<MembershipRecord, String> {
 
+    boolean existsByUserId(String userId);
+
     MembershipRecord findFirstByUserIdOrderByActivatedAtDesc(String userId);
 
     List<MembershipRecord> findAllByUserIdOrderByActivatedAtDesc(String userId);

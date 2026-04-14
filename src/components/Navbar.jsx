@@ -23,6 +23,8 @@ export default function Navbar() {
         { label: 'Home', href: '/' },
         { label: 'Dashboard', href: '/dashboard' },
         { label: 'Approvals', href: '/admin/payments' },
+        { label: 'Users', href: '/admin/users' },
+        { label: 'Tracking', href: '/admin/member-tracking' },
       ];
     }
 
@@ -127,7 +129,7 @@ export default function Navbar() {
                       Signed in as {user?.name}
                     </div>
                     {user?.role === 'ADMIN' ? (
-                      <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">Admin tools are available from Home, Dashboard, and Approvals. Bookings stay inside the admin dashboard.</p>
+                      <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">Admin tools are available from Home, Dashboard, Approvals, Users, and Tracking. Bookings stay inside the admin dashboard.</p>
                     ) : null}
                     <button type="button" onClick={logout} className="btn-secondary mt-2 w-full justify-center">
                       Log Out

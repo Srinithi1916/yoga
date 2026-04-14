@@ -4,6 +4,7 @@ import GlassPanel from '../components/GlassPanel';
 import ImageSlideshow from '../components/ImageSlideshow';
 import ReviewSection from '../components/ReviewSection';
 import SectionHeading from '../components/SectionHeading';
+import SpecialOfferSection from '../components/SpecialOfferSection';
 import WaveDivider from '../components/WaveDivider';
 import { BlossomSpray, FloralCorner, LeafWisp, LotusBloom } from '../components/Decorations';
 import {
@@ -12,12 +13,11 @@ import {
   communitySlides,
   contactDetails,
   heroSlides,
-  premiumPlan,
-  pricingPlans,
   progressFeatures,
   specialPrograms,
   testimonials,
   whatsappCommunityFeatures,
+  membershipPlans,
   yogaTypes,
 } from '../data/siteData';
 
@@ -28,7 +28,7 @@ const reveal = {
   transition: { duration: 0.7 },
 };
 
-const homeReviewItems = [...yogaTypes, ...specialPrograms, ...pricingPlans, premiumPlan].map((item) => ({
+const homeReviewItems = [...yogaTypes, ...specialPrograms, ...membershipPlans].map((item) => ({
   title: item.title,
   reviewItemId: item.reviewItemId,
   reviewItemType: item.reviewItemType,
@@ -70,10 +70,10 @@ export default function HomePage() {
                 </div>
                 <div className="flex flex-wrap gap-4">
                   <Link
-                    to="/contact"
+                    to="/pricing"
                     className="btn-secondary min-w-[158px] bg-purple-400/70 text-white hover:bg-purple-400/85"
                   >
-                    Start Trial
+                    View Plans
                   </Link>
                   <a
                     href={contactDetails.whatsappLink}
@@ -100,6 +100,16 @@ export default function HomePage() {
       </section>
 
       <WaveDivider className="-mt-2" />
+
+      <section className="px-4 pt-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <SpecialOfferSection
+            eyebrow="New Offers"
+            title="Start With a Simple Offer"
+            description="New-user trial + launch offer, plus the 14-day yoga + diet quick start."
+          />
+        </div>
+      </section>
 
       <section className="px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl space-y-8">
@@ -277,14 +287,14 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl">
           <GlassPanel className="rounded-[2.75rem] px-6 py-10 text-center shadow-bloom sm:px-10 sm:py-12">
             <h2 className="font-display text-5xl font-semibold text-rose-950 md:text-6xl">
-              Start Your Free Trial Today
+              Start Your Wellness Journey
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-lg font-medium leading-8 text-rose-900/82">
-              Start with one step and build a steady routine.
+              Choose the right offer or plan and begin with steady support.
             </p>
             <div className="mt-8 flex justify-center">
-              <Link to="/contact" className="btn-primary min-w-[220px] justify-center text-lg">
-                Start Free Trial
+              <Link to="/pricing" className="btn-primary min-w-[220px] justify-center text-lg">
+                View Plans
               </Link>
             </div>
           </GlassPanel>

@@ -1,5 +1,7 @@
 package com.jeevanam360.backend.auth;
 
+import java.time.Instant;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +19,7 @@ public class UserAccount {
     private String passwordHash;
     private String role;
     private boolean active;
+    private Instant createdAt;
 
     public String getId() {
         return id;
@@ -72,5 +75,13 @@ public class UserAccount {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }

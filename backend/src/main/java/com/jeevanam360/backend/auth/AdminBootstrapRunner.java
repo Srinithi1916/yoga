@@ -1,5 +1,6 @@
 package com.jeevanam360.backend.auth;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -48,6 +49,7 @@ public class AdminBootstrapRunner {
             boolean updated = false;
             if (user.getId() == null) {
                 user.setEmail(primaryAdminEmail);
+                user.setCreatedAt(Instant.now());
                 updated = true;
             }
 

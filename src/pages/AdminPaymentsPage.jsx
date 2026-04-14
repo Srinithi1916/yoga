@@ -139,6 +139,7 @@ export default function AdminPaymentsPage() {
                     <PaymentStatusChip status={payment.status} />
                     <h2 className="font-display text-3xl text-rose-950 sm:text-4xl">{payment.selectedPlan}</h2>
                   </div>
+                  {payment.planPrice ? <p className="mt-2 text-sm font-semibold text-rose-900/78">{payment.planPrice}</p> : null}
                   <p className="mt-3 text-sm leading-7 text-rose-900/78">
                     {payment.name} | {payment.email} | {payment.whatsapp}
                   </p>

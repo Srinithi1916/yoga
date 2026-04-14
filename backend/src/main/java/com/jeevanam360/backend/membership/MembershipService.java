@@ -12,6 +12,7 @@ import java.util.function.Function;
 import com.jeevanam360.backend.notification.NotificationService;
 import com.jeevanam360.backend.notification.UserMailService;
 import com.jeevanam360.backend.payment.PaymentRequestRecord;
+import com.jeevanam360.backend.payment.PaymentRequestRepository;
 import com.jeevanam360.backend.security.AuthenticatedUser;
 import org.springframework.stereotype.Service;
 
@@ -26,51 +27,78 @@ public class MembershipService {
 
     private final MembershipRepository membershipRepository;
     private final PlanCatalogService planCatalogService;
+    private final PaymentRequestRepository paymentRequestRepository;
     private final NotificationService notificationService;
     private final UserMailService userMailService;
 
     public MembershipService(
         MembershipRepository membershipRepository,
         PlanCatalogService planCatalogService,
+        PaymentRequestRepository paymentRequestRepository,
         NotificationService notificationService,
         UserMailService userMailService
     ) {
         this.membershipRepository = membershipRepository;
         this.planCatalogService = planCatalogService;
+        this.paymentRequestRepository = paymentRequestRepository;
         this.notificationService = notificationService;
         this.userMailService = userMailService;
     }
 
     public MembershipResponse getCurrentMembership(AuthenticatedUser user) {
-        MembershipRecord membership = membershipRepository.findFirstByUserIdOrderByActivatedAtDesc(user.id());
+        MembershipRecord membership = getCurrentMembershipRecordByUserId(user.id());
+        if (membership == null) {
+            return null;
+        }
+
+        return MembershipResponse.from(membership);
+    }
+
+    public MembershipRecord getCurrentMembershipRecordByUserId(String userId) {
+        MembershipRecord membership = membershipRepository.findFirstByUserIdOrderByActivatedAtDesc(userId);
         if (membership == null) {
             return null;
         }
 
         refreshStatus(membership);
-        return MembershipResponse.from(membershipRepository.save(membership));
+        return membershipRepository.save(membership);
     }
 
     public MembershipResponse updateProgress(AuthenticatedUser user, MembershipProgressRequest request) {
-        MembershipRecord membership = membershipRepository.findFirstByUserIdOrderByActivatedAtDesc(user.id());
+        MembershipRecord membership = getCurrentMembershipRecordByUserId(user.id());
         if (membership == null) {
             throw new IllegalArgumentException("No active plan was found for your account.");
         }
 
-        refreshStatus(membership);
-        if (STATUS_EXPIRED.equals(membership.getStatus()) || STATUS_SUPERSEDED.equals(membership.getStatus())) {
-            membershipRepository.save(membership);
-            throw new IllegalArgumentException("Your current plan is no longer active.");
-        }
+        validateActiveMembership(membership);
 
-        if (request.entryDate() != null) {
-            updateDailyProgress(membership, request);
-        } else {
-            applyLegacyProgressOverrides(membership, request);
-        }
-
+        applyProgressUpdate(membership, request, true);
         membership.setUpdatedAt(Instant.now());
         return MembershipResponse.from(membershipRepository.save(membership));
+    }
+
+    public List<AdminMembershipSummaryResponse> getActiveMembershipsForAdmin() {
+        return membershipRepository.findAllByStatusInOrderByEndAtAsc(List.of(STATUS_ACTIVE, STATUS_EXPIRING_SOON))
+            .stream()
+            .map(this::refreshAndSaveMembership)
+            .filter(membership -> STATUS_ACTIVE.equals(membership.getStatus()) || STATUS_EXPIRING_SOON.equals(membership.getStatus()))
+            .map(AdminMembershipSummaryResponse::from)
+            .toList();
+    }
+
+    public AdminMembershipDetailResponse getMembershipForAdmin(String membershipId) {
+        MembershipRecord membership = refreshAndSaveMembership(findMembershipById(membershipId));
+        validateActiveMembership(membership);
+        return AdminMembershipDetailResponse.from(membership);
+    }
+
+    public AdminMembershipDetailResponse updateMembershipProgressForAdmin(String membershipId, MembershipProgressRequest request) {
+        MembershipRecord membership = refreshAndSaveMembership(findMembershipById(membershipId));
+        validateActiveMembership(membership);
+
+        applyProgressUpdate(membership, request, false);
+        membership.setUpdatedAt(Instant.now());
+        return AdminMembershipDetailResponse.from(membershipRepository.save(membership));
     }
 
     public MembershipRecord activateFromPayment(PaymentRequestRecord paymentRequest) {
@@ -185,10 +213,20 @@ public class MembershipService {
         }
     }
 
-    private void updateDailyProgress(MembershipRecord membership, MembershipProgressRequest request) {
+    private void applyProgressUpdate(MembershipRecord membership, MembershipProgressRequest request, boolean restrictToToday) {
+        if (request.entryDate() != null) {
+            updateDailyProgress(membership, request, restrictToToday);
+        } else {
+            applyLegacyProgressOverrides(membership, request);
+        }
+    }
+
+    private void updateDailyProgress(MembershipRecord membership, MembershipProgressRequest request, boolean restrictToToday) {
         LocalDate selectedDate = parseDate(request.entryDate());
         validateDateInMembershipRange(membership, selectedDate);
-        validateDateIsToday(selectedDate);
+        if (restrictToToday) {
+            validateDateIsToday(selectedDate);
+        }
         initializeLegacyBaselines(membership);
 
         List<MembershipDailyProgressEntry> entries = membership.getDailyProgressEntries() == null
@@ -373,6 +411,22 @@ public class MembershipService {
         sentCodes.add(dedupeKey);
     }
 
+    private MembershipRecord findMembershipById(String membershipId) {
+        return membershipRepository.findById(membershipId)
+            .orElseThrow(() -> new IllegalArgumentException("The membership could not be found."));
+    }
+
+    private MembershipRecord refreshAndSaveMembership(MembershipRecord membership) {
+        refreshStatus(membership);
+        return membershipRepository.save(membership);
+    }
+
+    private void validateActiveMembership(MembershipRecord membership) {
+        if (STATUS_EXPIRED.equals(membership.getStatus()) || STATUS_SUPERSEDED.equals(membership.getStatus())) {
+            throw new IllegalArgumentException("The selected membership is no longer active.");
+        }
+    }
+
     private void expireOpenMemberships(String userId) {
         if (userId == null || userId.isBlank()) {
             return;
@@ -400,6 +454,7 @@ public class MembershipService {
         if (membership.getEndAt() != null && now.isAfter(membership.getEndAt())) {
             membership.setStatus(STATUS_EXPIRED);
             membership.setUpdatedAt(now);
+            clearPaymentApproval(membership);
             return;
         }
 
@@ -415,6 +470,16 @@ public class MembershipService {
             return Math.max(0, value);
         }
         return Math.max(0, Math.min(value, target));
+    }
+
+    private void clearPaymentApproval(MembershipRecord membership) {
+        String paymentRequestId = membership.getPaymentRequestId();
+        if (paymentRequestId == null || paymentRequestId.isBlank()) {
+            return;
+        }
+
+        paymentRequestRepository.deleteById(paymentRequestId);
+        membership.setPaymentRequestId(null);
     }
 
     private String trimToNull(String value) {

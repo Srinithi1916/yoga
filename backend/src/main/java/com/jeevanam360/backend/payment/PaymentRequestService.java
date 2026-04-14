@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.jeevanam360.backend.offer.OfferCatalogService;
 import com.jeevanam360.backend.membership.MembershipService;
 import com.jeevanam360.backend.membership.PlanCatalogService;
+import com.jeevanam360.backend.membership.MembershipRepository;
 import com.jeevanam360.backend.notification.NotificationService;
 import com.jeevanam360.backend.notification.UserMailService;
 import com.jeevanam360.backend.security.AuthenticatedUser;
@@ -24,6 +26,8 @@ public class PaymentRequestService {
 
     private final PaymentRequestRepository paymentRequestRepository;
     private final PlanCatalogService planCatalogService;
+    private final OfferCatalogService offerCatalogService;
+    private final MembershipRepository membershipRepository;
     private final MembershipService membershipService;
     private final NotificationService notificationService;
     private final UserMailService userMailService;
@@ -31,20 +35,41 @@ public class PaymentRequestService {
     public PaymentRequestService(
         PaymentRequestRepository paymentRequestRepository,
         PlanCatalogService planCatalogService,
+        OfferCatalogService offerCatalogService,
+        MembershipRepository membershipRepository,
         MembershipService membershipService,
         NotificationService notificationService,
         UserMailService userMailService
     ) {
         this.paymentRequestRepository = paymentRequestRepository;
         this.planCatalogService = planCatalogService;
+        this.offerCatalogService = offerCatalogService;
+        this.membershipRepository = membershipRepository;
         this.membershipService = membershipService;
         this.notificationService = notificationService;
         this.userMailService = userMailService;
     }
 
     public PaymentRequestRecord create(PaymentRequestPayload payload, AuthenticatedUser user) {
-        if (!planCatalogService.supports(payload.selectedPlan())) {
-            throw new IllegalArgumentException("Only membership plans can be activated through payment requests.");
+        boolean isPlanSelection = planCatalogService.supports(payload.selectedPlan());
+        boolean isOfferSelection = offerCatalogService.supports(payload.selectedPlan());
+
+        if (!isPlanSelection && !isOfferSelection) {
+            throw new IllegalArgumentException("Only current plans and offers can be submitted through payment requests.");
+        }
+
+        if (isOfferSelection && offerCatalogService.isNewUserOnly(payload.selectedPlan()) && hasExistingMemberHistory(user)) {
+            throw new IllegalArgumentException("This offer is only available for new users.");
+        }
+
+        if (isOfferSelection && offerCatalogService.isLaunchOffer(payload.selectedPlan())) {
+            long launchCount = paymentRequestRepository.countBySelectedPlanIgnoreCaseAndStatusIn(
+                payload.selectedPlan(),
+                List.of(STATUS_PENDING_REVIEW, STATUS_APPROVED, STATUS_PAID)
+            );
+            if (launchCount >= 10) {
+                throw new IllegalArgumentException("The launch offer has reached its limit.");
+            }
         }
 
         PaymentRequestRecord paymentRequest = new PaymentRequestRecord();
@@ -87,6 +112,14 @@ public class PaymentRequestService {
         );
 
         return saved;
+    }
+
+    private boolean hasExistingMemberHistory(AuthenticatedUser user) {
+        if (user == null || user.id() == null || user.id().isBlank()) {
+            return false;
+        }
+
+        return membershipRepository.existsByUserId(user.id()) || paymentRequestRepository.existsByUserId(user.id());
     }
 
     public List<PaymentRequestResponse> getMine(AuthenticatedUser user) {

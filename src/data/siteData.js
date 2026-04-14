@@ -215,9 +215,9 @@ const pricingPlanItems = [
   {
     planKey: 'INTERMEDIATE_PLAN',
     title: 'Intermediate Plan',
-    price: '15 Days (2 Sessions / Day)',
-    amount: null,
-    durationDays: 15,
+    price: '30 Days - Rs. 3499',
+    amount: 3499,
+    durationDays: 30,
     description: 'Yoga classes with a diet plan for stronger daily discipline.',
     features: [
       'Guided yoga classes',
@@ -237,9 +237,9 @@ const pricingPlanItems = [
   {
     planKey: 'ADVANCED_PLAN',
     title: 'Advanced Plan',
-    price: 'Fully Personalized',
-    amount: null,
-    durationDays: 30,
+    price: '60 Days - Rs. 6499',
+    amount: 6499,
+    durationDays: 60,
     description: 'Yoga, personalized meditation, and diet support in one plan.',
     features: [
       'Personalized yoga',
@@ -295,6 +295,49 @@ export const premiumPlan = {
   reviewItemType: 'PLAN',
   reviewItemTypeLabel: 'Membership Plan',
 };
+
+export const membershipPlans = [...pricingPlans, premiumPlan];
+
+export const firstTrialOffer = {
+  offerKey: 'FIRST_TRIAL_99',
+  title: 'First Trial Class',
+  price: 'Rs. 99',
+  durationLabel: '1 Class',
+  amount: 99,
+  description: 'A simple first class for new members.',
+  badge: 'New User Only',
+  paymentEnabled: true,
+  newUserOnly: true,
+  cta: 'Claim Offer',
+};
+
+export const yogaDietOffer = {
+  offerKey: 'YOGA_DIET_149',
+  title: 'Yoga + Personalized Diet Plan',
+  price: 'Rs. 149',
+  durationLabel: '14 Days',
+  amount: 149,
+  description: 'A guided yoga and personalized diet plan for 14 days.',
+  badge: 'Special Offer',
+  paymentEnabled: true,
+  newUserOnly: false,
+  cta: 'Choose Offer',
+};
+
+export const beginnerLaunchOffer = {
+  offerKey: 'BEGINNER_LAUNCH_999',
+  title: 'Beginner Yoga Launch Offer',
+  price: 'Rs. 999',
+  durationLabel: '30 Days',
+  amount: 999,
+  description: 'Launch offer for first 10 customers: one month of beginner yoga classes.',
+  badge: 'Launch Offer',
+  paymentEnabled: true,
+  newUserOnly: true,
+  cta: 'Claim Offer',
+};
+
+export const specialOffers = [firstTrialOffer, beginnerLaunchOffer, yogaDietOffer];
 
 export const trialBenefits = [
   'Free 1-Day Trial',
@@ -417,6 +460,18 @@ export const contactDetails = {
   tagline: brandDetails.supportLine,
 };
 
+export const paymentDetails = {
+  upiId: 'pencilwriting004@okhdfcbank',
+  googlePayNumber: contactDetails.phone,
+  accountHolderName: 'JOTHIKA P',
+  bankTransfer: {
+    accountName: 'JOTHIKA P',
+    bankName: 'Canara Bank',
+    accountNumber: '1003101034110',
+    ifsc: 'CNRB0001003',
+  },
+};
+
 export const socialLinks = [
   { label: 'WhatsApp', href: 'https://wa.me/919566556008?text=Hi%20I%20want%20to%20join%20Jeevanam%20360', external: true },
   { label: 'Email', href: 'mailto:jeevanam360@gmail.com', external: true },
@@ -432,6 +487,13 @@ export const contactSelectionOptions = [
     amount: null,
     paymentEnabled: false,
   },
+  ...specialOffers.map((offer) => ({
+    label: `${offer.title} - ${resolveDisplayPriceLabel(offer)}`,
+    value: offer.title,
+    planPrice: resolveDisplayPriceLabel(offer),
+    amount: offer.amount,
+    paymentEnabled: offer.paymentEnabled,
+  })),
   ...pricingPlans.map((plan) => ({
     label: `${plan.title} - ${plan.price}`,
     value: plan.title,
@@ -472,10 +534,18 @@ export function buildWhatsappUrl(message) {
   return `https://wa.me/${contactDetails.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
 
+export function resolveDisplayPriceLabel(plan) {
+  if (plan?.durationLabel && plan?.price) {
+    return `${plan.durationLabel} - ${plan.price}`;
+  }
+
+  return plan?.price || '';
+}
+
 export function buildContactPlanHref(plan) {
   const params = new URLSearchParams({
     plan: plan.title,
-    planPrice: plan.price,
+    planPrice: resolveDisplayPriceLabel(plan),
   });
 
   if (plan.amount) {

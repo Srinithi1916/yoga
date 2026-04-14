@@ -9,9 +9,13 @@ public interface PaymentRequestRepository extends MongoRepository<PaymentRequest
 
     Optional<PaymentRequestRecord> findByGatewayOrderId(String gatewayOrderId);
 
+    boolean existsByUserId(String userId);
+
     boolean existsByUserIdAndSelectedPlanIgnoreCaseAndStatusIn(String userId, String selectedPlan, List<String> statuses);
 
     boolean existsByEmailIgnoreCaseAndSelectedPlanIgnoreCaseAndStatusIn(String email, String selectedPlan, List<String> statuses);
+
+    long countBySelectedPlanIgnoreCaseAndStatusIn(String selectedPlan, List<String> statuses);
 
     List<PaymentRequestRecord> findAllByUserIdOrderByCreatedAtDesc(String userId);
 

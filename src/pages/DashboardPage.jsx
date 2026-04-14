@@ -486,6 +486,18 @@ export default function DashboardPage() {
                 to="/admin/bookings"
                 actionLabel="Open bookings"
               />
+              <AdminToolCard
+                title="Users"
+                description="See all registered users with current plan and payment status."
+                to="/admin/users"
+                actionLabel="Open users"
+              />
+              <AdminToolCard
+                title="Member Tracking"
+                description="Pick active members and update attendance or training progress on their plan."
+                to="/admin/member-tracking"
+                actionLabel="Open tracking"
+              />
             </div>
           </GlassPanel>
         </div>
@@ -521,6 +533,7 @@ export default function DashboardPage() {
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-600/70">Latest payment</p>
                 <h2 className="mt-2 font-display text-3xl text-rose-950">{latestPayment.selectedPlan}</h2>
+                {latestPayment.planPrice ? <p className="mt-2 text-sm font-semibold text-rose-900/78">{latestPayment.planPrice}</p> : null}
                 <p className="mt-2 text-sm leading-7 text-rose-900/76">
                   {latestPayment.paymentMethod || 'Manual'}
                   {latestPayment.transactionReference ? ` | Ref: ${latestPayment.transactionReference}` : ''}

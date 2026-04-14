@@ -6,7 +6,9 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import AboutPage from './pages/AboutPage';
 import AdminBookingsPage from './pages/AdminBookingsPage';
+import AdminMemberTrackingPage from './pages/AdminMemberTrackingPage';
 import AdminPaymentsPage from './pages/AdminPaymentsPage';
+import AdminUsersPage from './pages/AdminUsersPage';
 import AuthPage from './pages/AuthPage';
 import ContactPage from './pages/ContactPage';
 import DashboardPage from './pages/DashboardPage';
@@ -59,6 +61,22 @@ export default function App() {
               element={(
                 <AdminRoute>
                   <AdminBookingsPage />
+                </AdminRoute>
+              )}
+            />
+            <Route
+              path="/admin/users"
+              element={(
+                <AdminRoute>
+                  <AdminUsersPage />
+                </AdminRoute>
+              )}
+            />
+            <Route
+              path="/admin/member-tracking"
+              element={(
+                <AdminRoute>
+                  <AdminMemberTrackingPage />
                 </AdminRoute>
               )}
             />
